@@ -1,0 +1,112 @@
+{
+  "name": "dyna-process-manager",
+  "version": "1.0.1",
+  "description": "Process manager for node.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/aneldev/dyna-process-manager"
+  },
+  "main": "./dist/index.js",
+  "preinstall": {
+    ".install-tsc": "npm install -g typescript"
+  },
+  "scripts": {
+    "clear": "rimraf build temp",
+    "debug-dev-build": "rimraf build && webpack --config webpack.debug-dev.nodejs.config.js --watch",
+    "debug-dev-browser": "webpack-dev-server --config webpack.debug-dev.browser.config.js --port 8027 --devtool eval --progress --hot --content-base debug-ground/debug-dev-on-browser --host 0.0.0.0",
+    "debug-dev-devtools": "node --inspect --expose-gc ./debug-ground/debug-dev-on-nodejs/index.js  && npm run debug-dev-devtools",
+    "debug-dev-devtools-brk": "node --inspect-brk --expose-gc ./debug-ground/debug-dev-on-nodejs/index.js  && npm run debug-dev-devtools-brk",
+    "debug-dev-inspector": "node-debug --expose-gc ./debug-ground/debug-dev-on-nodejs/index.js  && npm run debug-dev-inspector",
+    "debug-dev-inspector-brk": "node-debug --debug-brk --expose-gc ./debug-ground/debug-dev-on-nodejs/index.js  && npm run debug-dev-inspector-brk",
+    "debug-dev-run": "node --expose-gc debug-ground/debug-dev-on-nodejs/index.js",
+    "debug-tests-build": "rimraf build && webpack --config webpack.debug-test.nodejs.config.js --watch",
+    "debug-tests-browser": "webpack-dev-server --config webpack.debug-test.browser.config.js --port 8023 --devtool eval --progress --hot --content-base debug-ground/debug-test-on-browser --host 0.0.0.0",
+    "debug-tests-devtools": "node --inspect --expose-gc ./debug-ground/debug-test-on-nodejs/index.js  && npm run debug-tests-devtools",
+    "debug-tests-devtools-brk": "node --inspect-brk --expose-gc ./debug-ground/debug-test-on-nodejs/index.js  && npm run debug-tests-devtools-brk",
+    "debug-tests-inspector": "node-debug --expose-gc ./debug-ground/debug-test-on-nodejs/index.js  && npm run debug-tests-inspector",
+    "debug-tests-inspector-brk": "node-debug --debug-brk --expose-gc ./debug-ground/debug-test-on-nodejs/index.js  && npm run debug-tests-inspector-brk",
+    "debug-tests-run": "node --expose-gc debug-ground/debug-test-on-nodejs/index.js",
+    "sync-externals": "node syncExternals.js",
+    "build-analyze": "set NODE_ENV=production && webpack --config webpack.dist.analyze.config.js",
+    "build-watch": "set NODE_ENV=production && webpack --config webpack.dist.config.js --watch",
+    "build-tsc-watch": "tsc -w",
+    "build": "rimraf ./dist/ && npm run .build-index.d.ts && npm run .build-dist",
+    ".build-index.d.ts": "tsc && rm ./dist/index.js; npm run .build-index.d.ts-clear",
+    ".build-index.d.ts-clear": "cd dist/ && find . -name \\*.js -delete && cd .. && rimraf temp",
+    ".build-dist": "set NODE_ENV=production && webpack --config webpack.dist.config.js",
+    "release": "npm run build && npm run publish-push",
+    "test": "jest --coverage --no-cache --runInBand",
+    "test-only": "jest --coverage --verbose --no-cache --runInBand",
+    "test-watch": "jest --watch --verbose --runInBand",
+    "commit": "git add -u && git add -A && git commit -m",
+    "commit-amend": "git add -u && git add -A && git commit --amend --no-edit",
+    "pp": "npm run publish-push",
+    "publish-push": "git add -u && git add -A && git commit -m \"last minute changes\"; npm version patch && npm publish && git push && git push --tags",
+    "tpp": "npm run test-publish-push",
+    "test-publish-push": "npm test && npm version patch && npm publish && git push && git push --tags",
+    "clear-npm-cache": "npm cache clear --force",
+    "update-release": "npm update && git add -u && git add -A && git commit -m \"last minute update-release changes\"; npm run release",
+    "reinstall": "rm ./package-lock.json; rm -rf ./node_modules; npm install"
+  },
+  "keywords": [],
+  "author": "Anel dev",
+  "license": "MIT",
+  "dependencies": {
+    "dyna-guid": "^1.0.2",
+    "dyna-logger": "^1.1.1",
+    "eventemitter3": "^2.0.3",
+    "which": "^1.3.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "@types/node": "^7.0.70",
+    "awesome-typescript-loader": "^3.5.0",
+    "babel-core": "6.11.4",
+    "babel-loader": "6.0.0",
+    "babel-plugin-add-module-exports": "0.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "6.9.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-runtime": "6.11.6",
+    "chokidar": "^1.7.0",
+    "dyna-loops": "^1.7.1",
+    "file-loader": "0.9.0",
+    "font-awesome": "4.6.3",
+    "jest": "^20.0.0",
+    "jest-cli": "^20.0.0",
+    "nodemon": "^1.18.4",
+    "rimraf": "^2.6.2",
+    "source-map-loader": "0.1.5",
+    "ts-jest": "^20.0.14",
+    "typescript": "^2.9.2",
+    "webpack": "^2.4.1",
+    "webpack-bundle-analyzer": "^2.13.1",
+    "webpack-dev-middleware": "^1.12.2",
+    "webpack-dev-server": "^2.11.3",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./tests/setup/testSetup.ts",
+    "automock": false,
+    "collectCoverage": false,
+    "testEnvironment": "jest-environment-node",
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(src|tests)/.*\\.(test|spec)\\.(ts|tsx|js|jsx)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!src/**/*.d.ts"
+    ]
+  },
+  "jest-junit": {
+    "output": "./coverage/junit.xml"
+  }
+}
