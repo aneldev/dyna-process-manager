@@ -1,3 +1,2 @@
-import { DynaProcessManager, ISettings, IDynaLoggerSettings } from './DynaProcessManager';
-import { DynaProcess } from './DynaProcess';
-export { DynaProcessManager, ISettings, IDynaLoggerSettings, DynaProcess };
+export { DynaProcessManager, IDynaProcessManagerConfig, IDynaLoggerConfig, } from './DynaProcessManager';
+export { DynaProcess, IDynaProcessConfig, IDynaProcessConfigGuard, EDynaProcessEvent, } from './DynaProcess';

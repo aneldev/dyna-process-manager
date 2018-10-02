@@ -1,17 +1,18 @@
-import { ISettings as IDynaLoggerSettings } from 'dyna-logger';
-import { DynaProcess, IDynaProcessSetup } from './DynaProcess';
-export interface ISettings {
+import { ISettings as IDynaLoggerConfig } from 'dyna-logger';
+import { DynaProcess, IDynaProcessConfig } from './DynaProcess';
+export interface IDynaProcessManagerConfig {
+    loggerSettings?: IDynaLoggerConfig;
 }
-export { IDynaLoggerSettings };
+export { IDynaLoggerConfig };
 export declare class DynaProcessManager {
-    constructor(settings: ISettings, loggerSettings: IDynaLoggerSettings);
-    private _settings;
+    private readonly _config;
+    constructor(_config?: IDynaProcessManagerConfig);
     private _logger;
     private _processes;
-    addProcess(processSetup: IDynaProcessSetup): DynaProcess;
+    addProcess(processSetup: IDynaProcessConfig): DynaProcess;
     removeProcess(processId: string): Promise<void>;
     getProcess(processId: string): DynaProcess;
     readonly count: number;
     stop(processId: string): Promise<any>;
-    stopAll(): void;
+    stopAll(): Promise<void>;
 }

@@ -1,39 +1,43 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
-import { DynaLogger } from "dyna-logger/dist";
-export interface IDynaProcessSetup {
+import { DynaLogger, ISettings as IDynaLoggerSettings } from "dyna-logger";
+export interface IDynaProcessConfig {
     name: string;
     cwd: string;
     command: string;
     args?: string[];
     env?: any;
-    guard?: IDynaProcessSetupGuard;
+    guard?: IDynaProcessConfigGuard;
+    loggerSettings?: IDynaLoggerSettings;
 }
-export interface IDynaProcessSetupGuard {
+export interface IDynaProcessConfigGuard {
     restartAfterMs: number;
 }
+export declare enum EDynaProcessEvent {
+    STOP = "STOP",
+    CRASH = "CRASH",
+    CONSOLE_ERROR = "CONSOLE_ERROR"
+}
 export declare class DynaProcess extends EventEmitter {
-    constructor(logger: DynaLogger, dynaProsessSetup: IDynaProcessSetup);
+    private readonly _config;
+    constructor(_config: IDynaProcessConfig);
     private _id;
-    private _logger;
-    private _setup;
-    private _isWorking;
+    private _active;
     private _process;
     private _startedAt;
     private _stoppedAt;
     private _stopCalled;
     private _lastExitCode;
-    events: any;
+    logger: DynaLogger;
     readonly id: string;
-    readonly isWorking: boolean;
-    readonly setup: IDynaProcessSetup;
+    readonly active: boolean;
     start(): Promise<boolean>;
     _start(): Promise<boolean>;
     stop(signal?: string): void;
-    private _handleOnConsoleLog(text);
-    private _handleOnConsoleError(text);
-    private _handleOnClose(exitCode, signal);
-    private _handleProcessError(error);
-    private _consoleLog(message, data?, processSays?);
-    private _consoleError(message, data?, processSays?);
+    private _handleOnConsoleLog;
+    private _handleOnConsoleError;
+    private _handleOnClose;
+    private _handleProcessError;
+    private _consoleLog;
+    private _consoleError;
 }
