@@ -1,8 +1,11 @@
 .git/
 .idea/
 coverage/
-debug-ground/debug-on-nodejs/
+debug-ground/debug-dev-on-nodejs/
+debug-ground/debug-test-on-nodejs/
 node_modules/
 temp/
-npm-debug.log
-bash.exe.stackdump
+/npm-debug.log
+/bash.exe.stackdump
+/syncExternalsList.js
+/update-externals.sh

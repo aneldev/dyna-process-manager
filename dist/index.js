@@ -7,7 +7,7 @@
 		exports["dyna-process-manager"] = factory(require("dyna-logger"), require("child_process"), require("dyna-guid"), require("events"), require("which"));
 	else
 		root["dyna-process-manager"] = factory(root["dyna-logger"], root["child_process"], root["dyna-guid"], root["events"], root["which"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_4__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__, __WEBPACK_EXTERNAL_MODULE_8__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -102,10 +102,10 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
-var cp = __webpack_require__(4);
-var which = __webpack_require__(7);
-var events_1 = __webpack_require__(6);
-var dyna_guid_1 = __webpack_require__(5);
+var cp = __webpack_require__(5);
+var which = __webpack_require__(8);
+var events_1 = __webpack_require__(7);
+var dyna_guid_1 = __webpack_require__(6);
 var dyna_logger_1 = __webpack_require__(1);
 var EDynaProcessEvent;
 (function (EDynaProcessEvent) {
@@ -256,6 +256,9 @@ exports.DynaProcessManager = DynaProcessManager_1.DynaProcessManager;
 var DynaProcess_1 = __webpack_require__(0);
 exports.DynaProcess = DynaProcess_1.DynaProcess;
 exports.EDynaProcessEvent = DynaProcess_1.EDynaProcessEvent;
+var codeDataString_1 = __webpack_require__(4);
+exports.encodeDataToString = codeDataString_1.encodeDataToString;
+exports.decodeStringToData = codeDataString_1.decodeStringToData;
 
 
 /***/ }),
@@ -359,30 +362,41 @@ exports.DynaProcessManager = DynaProcessManager;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = require("child_process");
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.encodeDataToString = function (data) { return encodeURI(JSON.stringify(data)); };
+exports.decodeStringToData = function (encoded) { return JSON.parse(decodeURI(encoded)); };
+
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = require("dyna-guid");
+module.exports = require("child_process");
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
-module.exports = require("events");
+module.exports = require("dyna-guid");
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports) {
 
-module.exports = require("which");
+module.exports = require("events");
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+module.exports = require("which");
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(2);

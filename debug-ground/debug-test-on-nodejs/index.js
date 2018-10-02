@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -93,8 +93,8 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
 var cp = __webpack_require__(8);
-var which = __webpack_require__(12);
-var events_1 = __webpack_require__(10);
+var which = __webpack_require__(15);
+var events_1 = __webpack_require__(11);
 var dyna_guid_1 = __webpack_require__(9);
 var dyna_logger_1 = __webpack_require__(1);
 var EDynaProcessEvent;
@@ -242,7 +242,7 @@ module.exports = require("dyna-logger");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 __webpack_require__(7);
-__webpack_require__(17);
+__webpack_require__(13);
 
 
 /***/ }),
@@ -362,6 +362,9 @@ exports.DynaProcessManager = DynaProcessManager_1.DynaProcessManager;
 var DynaProcess_1 = __webpack_require__(0);
 exports.DynaProcess = DynaProcess_1.DynaProcess;
 exports.EDynaProcessEvent = DynaProcess_1.EDynaProcessEvent;
+var codeDataString_1 = __webpack_require__(18);
+exports.encodeDataToString = codeDataString_1.encodeDataToString;
+exports.decodeStringToData = codeDataString_1.decodeStringToData;
 
 
 /***/ }),
@@ -538,13 +541,14 @@ module.exports = require("child_process");
 module.exports = require("dyna-guid");
 
 /***/ }),
-/* 10 */
+/* 10 */,
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("events");
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(3);
@@ -552,17 +556,7 @@ module.exports = __webpack_require__(2);
 
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = require("which");
-
-/***/ }),
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -639,6 +633,26 @@ describe('Dyna process manager - should restart the failed process and stop it o
         expect(pm.count).toBe(0);
     });
 });
+
+
+/***/ }),
+/* 14 */,
+/* 15 */
+/***/ (function(module, exports) {
+
+module.exports = require("which");
+
+/***/ }),
+/* 16 */,
+/* 17 */,
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.encodeDataToString = function (data) { return encodeURI(JSON.stringify(data)); };
+exports.decodeStringToData = function (encoded) { return JSON.parse(decodeURI(encoded)); };
 
 
 /***/ })
