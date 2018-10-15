@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -92,10 +92,10 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
-var cp = __webpack_require__(8);
-var which = __webpack_require__(15);
+var cp = __webpack_require__(9);
+var which = __webpack_require__(12);
 var events_1 = __webpack_require__(11);
-var dyna_guid_1 = __webpack_require__(9);
+var dyna_guid_1 = __webpack_require__(10);
 var dyna_logger_1 = __webpack_require__(1);
 var EDynaProcessEvent;
 (function (EDynaProcessEvent) {
@@ -144,10 +144,13 @@ var DynaProcess = /** @class */ (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _a = _this._config, command = _a.command, args = _a.args, cwd = _a.cwd, env = _a.env;
+            var applyArgs = Array.isArray(args)
+                ? args
+                : args.split(' ').filter(function (a) { return !!a; });
             if (_this._active)
                 resolve(false);
             try {
-                _this._process = cp.spawn(command, args, {
+                _this._process = cp.spawn(command, applyArgs, {
                     cwd: cwd,
                     env: env
                 });
@@ -241,8 +244,8 @@ module.exports = require("dyna-logger");
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__(8);
 __webpack_require__(7);
-__webpack_require__(13);
 
 
 /***/ }),
@@ -357,19 +360,109 @@ exports.DynaProcessManager = DynaProcessManager;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.encodeDataToString = function (data) { return encodeURI(JSON.stringify(data)); };
+exports.decodeStringToData = function (encoded) { return JSON.parse(decodeURI(encoded)); };
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var DynaProcessManager_1 = __webpack_require__(4);
 exports.DynaProcessManager = DynaProcessManager_1.DynaProcessManager;
 var DynaProcess_1 = __webpack_require__(0);
 exports.DynaProcess = DynaProcess_1.DynaProcess;
 exports.EDynaProcessEvent = DynaProcess_1.EDynaProcessEvent;
-var codeDataString_1 = __webpack_require__(18);
+var codeDataString_1 = __webpack_require__(5);
 exports.encodeDataToString = codeDataString_1.encodeDataToString;
 exports.decodeStringToData = codeDataString_1.decodeStringToData;
 
 
 /***/ }),
-/* 6 */,
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+if (typeof jasmine !== 'undefined')
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+var src_1 = __webpack_require__(6);
+var pm = new src_1.DynaProcessManager({
+    loggerSettings: {
+        consoleLogs: false,
+        consoleErrorLogs: false,
+    },
+});
+describe('Dyna process manager - should restart the failed process and stop it on demand', function () {
+    var myProcess;
+    var crashTimeout = 1000;
+    var stopped = false;
+    var crashed = false;
+    it('should create the process', function () {
+        myProcess = pm.addProcess({
+            name: 'process test',
+            command: 'node',
+            args: ("ProcessSampleThrow.js ProcessTestForCrash " + crashTimeout).split(' '),
+            cwd: './tests/scripts',
+            guard: {
+                restartAfterMs: 50,
+            },
+        });
+        myProcess.on(src_1.EDynaProcessEvent.STOP, function () { return stopped = true; });
+        myProcess.on(src_1.EDynaProcessEvent.CRASH, function () { return crashed = true; });
+        expect(myProcess).not.toBe(undefined);
+    });
+    it('should start myProcess', function (done) {
+        myProcess.start()
+            .then(function () {
+            expect(myProcess.active).toBe(true);
+            done();
+        })
+            .catch(function (error) {
+            console.error(error);
+            done();
+        });
+    });
+    it('myProcess should still work', function (done) {
+        setTimeout(function () {
+            expect(myProcess.active).toBe(true);
+            done();
+        }, crashTimeout * 0.5);
+    });
+    it('myProcess should still work because is restarted by the guard', function (done) {
+        setTimeout(function () {
+            expect(myProcess.active).toBe(true);
+            expect(stopped).toBe(false);
+            expect(crashed).toBe(true);
+            done();
+        }, crashTimeout * 1);
+    });
+    it('should stop the process', function (done) {
+        pm.stop(myProcess.id)
+            .then(function () {
+            done();
+        })
+            .catch(function (error) {
+            console.error(error);
+            done();
+        });
+    });
+    it('should have processes', function () {
+        expect(pm.count).toBe(1);
+    });
+    it('should remove the processes', function () {
+        pm.removeProcess(myProcess.id);
+        expect(pm.count).toBe(0);
+    });
+});
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -529,19 +622,18 @@ function finished() {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = require("dyna-guid");
 
 /***/ }),
-/* 10 */,
 /* 11 */
 /***/ (function(module, exports) {
 
@@ -549,110 +641,16 @@ module.exports = require("events");
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(3);
-module.exports = __webpack_require__(2);
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-if (typeof jasmine !== 'undefined')
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
-var src_1 = __webpack_require__(5);
-var pm = new src_1.DynaProcessManager({
-    loggerSettings: {
-        consoleLogs: false,
-        consoleErrorLogs: false,
-    },
-});
-describe('Dyna process manager - should restart the failed process and stop it on demand', function () {
-    var myProcess;
-    var crashTimeout = 1000;
-    var stopped = false;
-    var crashed = false;
-    it('should create the process', function () {
-        myProcess = pm.addProcess({
-            name: 'process test',
-            command: 'node',
-            args: ("ProcessSampleThrow.js ProcessTestForCrash " + crashTimeout).split(' '),
-            cwd: './tests/scripts',
-            guard: {
-                restartAfterMs: 50,
-            },
-        });
-        myProcess.on(src_1.EDynaProcessEvent.STOP, function () { return stopped = true; });
-        myProcess.on(src_1.EDynaProcessEvent.CRASH, function () { return crashed = true; });
-        expect(myProcess).not.toBe(undefined);
-    });
-    it('should start myProcess', function (done) {
-        myProcess.start()
-            .then(function () {
-            expect(myProcess.active).toBe(true);
-            done();
-        })
-            .catch(function (error) {
-            console.error(error);
-            done();
-        });
-    });
-    it('myProcess should still work', function (done) {
-        setTimeout(function () {
-            expect(myProcess.active).toBe(true);
-            done();
-        }, crashTimeout * 0.5);
-    });
-    it('myProcess should still work because is restarted by the guard', function (done) {
-        setTimeout(function () {
-            expect(myProcess.active).toBe(true);
-            expect(stopped).toBe(false);
-            expect(crashed).toBe(true);
-            done();
-        }, crashTimeout * 1);
-    });
-    it('should stop the process', function (done) {
-        pm.stop(myProcess.id)
-            .then(function () {
-            done();
-        })
-            .catch(function (error) {
-            console.error(error);
-            done();
-        });
-    });
-    it('should have processes', function () {
-        expect(pm.count).toBe(1);
-    });
-    it('should remove the processes', function () {
-        pm.removeProcess(myProcess.id);
-        expect(pm.count).toBe(0);
-    });
-});
-
-
-/***/ }),
-/* 14 */,
-/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("which");
 
 /***/ }),
-/* 16 */,
-/* 17 */,
-/* 18 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.encodeDataToString = function (data) { return encodeURI(JSON.stringify(data)); };
-exports.decodeStringToData = function (encoded) { return JSON.parse(decodeURI(encoded)); };
+__webpack_require__(3);
+module.exports = __webpack_require__(2);
 
 
 /***/ })

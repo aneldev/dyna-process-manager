@@ -1,10 +1,10 @@
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
-import * as cp                                        from 'child_process';
-import * as which                                     from "which";
-import {IError}                                       from "./interfaces";
-import {EventEmitter}                                 from 'events';
-import {guid}                                         from "dyna-guid";
-import {DynaLogger, ISettings as IDynaLoggerSettings} from "dyna-logger";
+import * as cp                         from 'child_process';
+import * as which                      from "which";
+import {IError}                        from "./interfaces";
+import {EventEmitter}                  from 'events';
+import {guid}                          from "dyna-guid";
+import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
 
 export interface IDynaProcessConfig {
   name: string;               // name this process for console messages and stats
@@ -13,7 +13,7 @@ export interface IDynaProcessConfig {
   args?: string | string[];   // arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
-  loggerSettings?: IDynaLoggerSettings;
+  loggerSettings?: IDynaLoggerConfig;
 }
 
 export interface IDynaProcessConfigGuard {
@@ -92,7 +92,7 @@ export class DynaProcess extends EventEmitter {
         this._process.stdout.on('data', (text: string) => this._handleOnConsoleLog(text));
         this._process.stderr.on('data', (text: string) => this._handleOnConsoleError(text));
         this._process.on('close', (code: number, signal: string) => this._handleOnClose(code, signal));
-        this._process.on('error', (error:any) => this._handleProcessError(error));
+        this._process.on('error', (error: any) => this._handleProcessError(error));
 
         this._startedAt = new Date();
         this._stoppedAt = null;
@@ -118,11 +118,11 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _handleOnConsoleLog(text: string): void {
-    this._consoleLog(text, null,true);
+    this._consoleLog(text, null, true);
   }
 
   private _handleOnConsoleError(text: string): void {
-    this._consoleError(text, null,true);
+    this._consoleError(text, null, true);
     this.emit(EDynaProcessEvent.CONSOLE_ERROR);
   }
 
@@ -135,7 +135,7 @@ export class DynaProcess extends EventEmitter {
     this._lastExitCode = exitCode;
 
     if (exitCode) {
-      this._consoleError(`Crashed! Exited with exit code [${exitCode}] and signal [${signal}]`, );
+      this._consoleError(`Crashed! Exited with exit code [${exitCode}] and signal [${signal}]`,);
       this.emit(EDynaProcessEvent.CRASH, {exitCode});
       if (guard) {
         if (!this._stopCalled) {
@@ -154,15 +154,15 @@ export class DynaProcess extends EventEmitter {
     }
   }
 
-  private _handleProcessError(error:any):void{
+  private _handleProcessError(error: any): void {
     this._consoleError('general error', {error, pid: this._process.pid});
   }
 
-  private _consoleLog(message: string, data:any=undefined, processSays: boolean = false): void {
+  private _consoleLog(message: string, data: any = undefined, processSays: boolean = false): void {
     this.logger.log(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
   }
 
-  private _consoleError(message: string, data:any=undefined, processSays: boolean = false): void {
+  private _consoleError(message: string, data: any = undefined, processSays: boolean = false): void {
     this.logger.error(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
   }
 }

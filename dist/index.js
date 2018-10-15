@@ -154,10 +154,13 @@ var DynaProcess = /** @class */ (function (_super) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             var _a = _this._config, command = _a.command, args = _a.args, cwd = _a.cwd, env = _a.env;
+            var applyArgs = Array.isArray(args)
+                ? args
+                : args.split(' ').filter(function (a) { return !!a; });
             if (_this._active)
                 resolve(false);
             try {
-                _this._process = cp.spawn(command, args, {
+                _this._process = cp.spawn(command, applyArgs, {
                     cwd: cwd,
                     env: env
                 });

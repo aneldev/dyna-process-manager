@@ -1,4 +1,4 @@
-import {DynaLogger, ISettings as IDynaLoggerConfig}         from 'dyna-logger';
+import {DynaLogger, IDynaLoggerConfig}                      from 'dyna-logger';
 import {DynaProcess, EDynaProcessEvent, IDynaProcessConfig} from './DynaProcess';
 import {IError}                                             from "./interfaces";
 
