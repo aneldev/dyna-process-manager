@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
-import { DynaLogger, ISettings as IDynaLoggerSettings } from "dyna-logger";
+import { DynaLogger, IDynaLoggerConfig } from "dyna-logger";
 export interface IDynaProcessConfig {
     name: string;
     cwd: string;
@@ -8,7 +8,7 @@ export interface IDynaProcessConfig {
     args?: string | string[];
     env?: any;
     guard?: IDynaProcessConfigGuard;
-    loggerSettings?: IDynaLoggerSettings;
+    loggerSettings?: IDynaLoggerConfig;
 }
 export interface IDynaProcessConfigGuard {
     restartAfterMs: number;
