@@ -7,11 +7,11 @@ import {guid}                                         from "dyna-guid";
 import {DynaLogger, ISettings as IDynaLoggerSettings} from "dyna-logger";
 
 export interface IDynaProcessConfig {
-  name: string;     // name this process for console messages and stats
-  cwd: string;      // Current working directory of the child process
-  command: string;
-  args?: string[];  // arguments
-  env?: any;        // Environment key-value pairs
+  name: string;               // name this process for console messages and stats
+  cwd: string;                // Current working directory of the child process
+  command: string;            // full executable filename
+  args?: string | string[];   // arguments
+  env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
   loggerSettings?: IDynaLoggerSettings;
 }
@@ -71,12 +71,16 @@ export class DynaProcess extends EventEmitter {
   public _start(): Promise<boolean> {
     return new Promise((resolve: (started: boolean) => void, reject: (error: IError) => void) => {
       const {command, args, cwd, env} = this._config;
+      let applyArgs: string[] =
+        Array.isArray(args)
+          ? args
+          : (args as string).split(' ').filter(a => !!a);
       if (this._active) resolve(false);
 
       try {
         this._process = cp.spawn(
           command,
-          args,
+          applyArgs,
           {
             cwd,
             env
