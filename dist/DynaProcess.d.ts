@@ -40,4 +40,5 @@ export declare class DynaProcess extends EventEmitter {
     private _handleProcessError;
     private _consoleLog;
     private _consoleError;
+    private static cleanProcessConsole;
 }

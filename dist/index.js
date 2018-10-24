@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("dyna-logger"), require("child_process"), require("dyna-guid"), require("events"), require("which"));
+		module.exports = factory(require("dyna-logger"), require("child_process"), require("dyna-guid"), require("events"), require("which"), require("os"));
 	else if(typeof define === 'function' && define.amd)
-		define("dyna-process-manager", ["dyna-logger", "child_process", "dyna-guid", "events", "which"], factory);
+		define("dyna-process-manager", ["dyna-logger", "child_process", "dyna-guid", "events", "which", "os"], factory);
 	else if(typeof exports === 'object')
-		exports["dyna-process-manager"] = factory(require("dyna-logger"), require("child_process"), require("dyna-guid"), require("events"), require("which"));
+		exports["dyna-process-manager"] = factory(require("dyna-logger"), require("child_process"), require("dyna-guid"), require("events"), require("which"), require("os"));
 	else
-		root["dyna-process-manager"] = factory(root["dyna-logger"], root["child_process"], root["dyna-guid"], root["events"], root["which"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__, __WEBPACK_EXTERNAL_MODULE_8__) {
+		root["dyna-process-manager"] = factory(root["dyna-logger"], root["child_process"], root["dyna-guid"], root["events"], root["which"], root["os"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_5__, __WEBPACK_EXTERNAL_MODULE_6__, __WEBPACK_EXTERNAL_MODULE_7__, __WEBPACK_EXTERNAL_MODULE_8__, __WEBPACK_EXTERNAL_MODULE_10__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -107,6 +107,7 @@ var which = __webpack_require__(8);
 var events_1 = __webpack_require__(7);
 var dyna_guid_1 = __webpack_require__(6);
 var dyna_logger_1 = __webpack_require__(1);
+var EOL = __webpack_require__(10).EOL;
 var EDynaProcessEvent;
 (function (EDynaProcessEvent) {
     EDynaProcessEvent["STOP"] = "STOP";
@@ -229,12 +230,20 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._consoleLog = function (message, data, processSays) {
         if (data === void 0) { data = undefined; }
         if (processSays === void 0) { processSays = false; }
+        message = DynaProcess.cleanProcessConsole(message);
         this.logger.log("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
     };
     DynaProcess.prototype._consoleError = function (message, data, processSays) {
         if (data === void 0) { data = undefined; }
         if (processSays === void 0) { processSays = false; }
+        message = DynaProcess.cleanProcessConsole(message);
         this.logger.error("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
+    };
+    DynaProcess.cleanProcessConsole = function (text) {
+        text = text.toString();
+        if (text.endsWith(EOL))
+            text = text.slice(0, EOL.length);
+        return text;
     };
     return DynaProcess;
 }(events_1.EventEmitter));
@@ -404,6 +413,12 @@ module.exports = require("which");
 
 module.exports = __webpack_require__(2);
 
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = require("os");
 
 /***/ })
 /******/ ]);

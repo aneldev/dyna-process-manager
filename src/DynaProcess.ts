@@ -6,6 +6,8 @@ import {EventEmitter}                  from 'events';
 import {guid}                          from "dyna-guid";
 import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
 
+const EOL: string = require('os').EOL;
+
 export interface IDynaProcessConfig {
   name: string;               // name this process for console messages and stats
   cwd: string;                // Current working directory of the child process
@@ -159,10 +161,18 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _consoleLog(message: string, data: any = undefined, processSays: boolean = false): void {
+    message = DynaProcess.cleanProcessConsole(message);
     this.logger.log(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
   }
 
   private _consoleError(message: string, data: any = undefined, processSays: boolean = false): void {
+    message = DynaProcess.cleanProcessConsole(message);
     this.logger.error(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
+  }
+
+  private static cleanProcessConsole(text: any): string {
+    text=text.toString();
+    if (text.endsWith(EOL)) text=text.slice(0, EOL.length);
+    return text;
   }
 }
