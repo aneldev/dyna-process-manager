@@ -242,7 +242,7 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.cleanProcessConsole = function (text) {
         text = text.toString();
         if (text.endsWith(EOL))
-            text = text.slice(0, EOL.length);
+            text = text.slice(0, -EOL.length);
         return text;
     };
     return DynaProcess;

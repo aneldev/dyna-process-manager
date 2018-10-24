@@ -172,7 +172,7 @@ export class DynaProcess extends EventEmitter {
 
   private static cleanProcessConsole(text: any): string {
     text=text.toString();
-    if (text.endsWith(EOL)) text=text.slice(0, EOL.length);
+    if (text.endsWith(EOL)) text=text.slice(0, -EOL.length);
     return text;
   }
 }
