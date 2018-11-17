@@ -2706,10 +2706,10 @@ dyna-guid@^1.0.2:
   resolved "https://registry.yarnpkg.com/dyna-guid/-/dyna-guid-1.0.10.tgz#0aab519f22ef399ef43aed44f9bf905d609b4bc8"
 
 dyna-logger@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/dyna-logger/-/dyna-logger-4.0.1.tgz#e41a6c2c73a8600daab659810c55e055ff76b656"
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/dyna-logger/-/dyna-logger-4.0.3.tgz#2da0ea9bcad87395825f212cdc6309217c08dc1d"
   dependencies:
-    dyna-universal "^1.3.5"
+    dyna-universal "^2.0.0"
 
 dyna-node-console@^1.0.7:
   version "1.0.7"
@@ -2717,9 +2717,9 @@ dyna-node-console@^1.0.7:
   dependencies:
     chalk "^2.4.1"
 
-dyna-universal@^1.3.5:
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/dyna-universal/-/dyna-universal-1.3.7.tgz#3101bc175a26f4c791c0542dcef917a0b629fdf3"
+dyna-universal@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/dyna-universal/-/dyna-universal-2.0.2.tgz#56fa151d5e3f267e6277175abdcc10538d0e25f3"
 
 each-async@^1.0.0, each-async@^1.1.1:
   version "1.1.1"

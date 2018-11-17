@@ -1,5 +1,5 @@
-import {DynaLogger, IDynaLoggerConfig}                      from 'dyna-logger';
-import {DynaProcess, EDynaProcessEvent, IDynaProcessConfig} from './DynaProcess';
+import {DynaLogger, IDynaLoggerConfig}                      from "dyna-logger/node";
+import {DynaProcess, EDynaProcessEvent, IDynaProcessConfig} from "./DynaProcess";
 import {IError}                                             from "./interfaces";
 
 export interface IDynaProcessManagerConfig {

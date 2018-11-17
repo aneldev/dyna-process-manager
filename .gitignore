@@ -9,3 +9,4 @@ temp/
 /bash.exe.stackdump
 /syncExternalsList.js
 /update-externals.sh
+/yarn-error.log

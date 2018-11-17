@@ -4,7 +4,7 @@ import * as which                      from "which";
 import {IError}                        from "./interfaces";
 import {EventEmitter}                  from 'events';
 import {guid}                          from "dyna-guid";
-import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
+import {DynaLogger, IDynaLoggerConfig} from "dyna-logger/node";
 
 const EOL: string = require('os').EOL;
 

@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
-    "lib": ["es2015", "es2016", "es6", "dom"],
+    "lib": [
+      "es2015",
+      "es2015.promise",
+      "es2016",
+      "es6",
+      "dom"
+    ],
     "outDir": "./dist/",
     "declaration": true,
     "declarationDir": "./dist/",
@@ -10,12 +16,15 @@
     "target": "es5",
     "allowJs": false,
     "noErrorTruncation": true,
+    "skipLibCheck": true,
     "types": [
       "node"
     ]
   },
   "files": [
-    "src/index.ts"
+    "src/index.ts",
+    "src/node.ts",
+    "src/web.ts"
   ],
   "compileOnSave": false
 }

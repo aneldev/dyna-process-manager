@@ -12,10 +12,8 @@ if (typeof jasmine !== 'undefined') jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
 console.log('Test info: items:', ITEMS_COUNT, 'timeout:', timeout);
 
-import {forTimes} from 'dyna-loops';
-
 import {DynaProcessManager, DynaProcess} from '../../src';
-import {IError}                          from "../../src/interfaces";
+import {IError} from "../../src/interfaces";
 
 const pm: DynaProcessManager = new DynaProcessManager({
   loggerSettings: {
@@ -28,7 +26,7 @@ describe('Dyna process manager - simple test with success termination', () => {
   let myProcesses: DynaProcess[] = [];
 
   it('should create the process', () => {
-    forTimes(ITEMS_COUNT, () => {
+    Array(ITEMS_COUNT).fill(null).forEach(() => {
       let myProcess = pm.addProcess({
         name: 'process test 1',
         command: 'node',
