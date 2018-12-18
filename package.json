@@ -6,13 +6,15 @@
     "type": "git",
     "url": "http://github.com/aneldev/dyna-process-manager"
   },
+  "sideEffects": false,
   "main": "./dist/index.js",
+  "typings": "./dist/src/index.d.ts",
   "scripts": {
     "clear": "rimraf build temp",
     "lint": "tslint './src/**/*.ts*' --format stylish --force",
-    "debug-dev-build": "rimraf build && webpack --config webpack.debug-dev.nodejs.config.js --watch",
     "debug-dev-browser": "webpack-dev-server --config webpack.debug-dev.browser.config.js --devtool eval --progress --hot --open --content-base debug-ground/debug-dev-on-browser --host 127.0.0.1 --port 3300",
     "debug-dev-browser-at": "webpack-dev-server --config webpack.debug-dev.browser.config.js --devtool eval --progress --hot --open --content-base debug-ground/debug-dev-on-browser --host 127.0.0.1 --port",
+    "debug-dev-build": "rimraf build && webpack --config webpack.debug-dev.nodejs.config.js --watch",
     "debug-dev-devtools": "node --inspect --expose-gc --trace-warnings ./debug-ground/debug-dev-on-nodejs/index.js && yarn run debug-dev-devtools",
     "debug-dev-devtools-brk": "node --inspect-brk --expose-gc --trace-warnings ./debug-ground/debug-dev-on-nodejs/index.js && yarn run debug-dev-devtools-brk",
     "debug-dev-run": "node --expose-gc debug-ground/debug-dev-on-nodejs/index.js",
@@ -38,8 +40,8 @@
     "test-watch": "jest --watch --verbose --runInBand",
     "commit": "git add -u && git add -A && git commit -m",
     "commit-amend": "git add -u && git add -A && git commit --amend --no-edit",
-    "publish-push": "git add -u && git add -A && git commit -m \"last minute changes\"; yarn publish && git push && git push --tags",
-    "test-publish-push": "yarn test && yarn publish && git push && git push --tags",
+    "publish-push": "git add -u && git add -A && git commit -m \"last minute changes\"; yarn version --patch && yarn publish && git push && git push --tags",
+    "test-publish-push": "yarn test && yarn version --patch && yarn publish && git push && git push --tags",
     "update-release": "yarn upgrade && git add -u && git add -A && git commit -m \"last minute update-release changes\"; yarn run release",
     "reinstall": "rm ./yarn.lock rm -rf ./node_modules; yarn install",
     "reinstall-dyna": "rm ./yarn.lock; rm -rf ./node_modules/dyna-*; yarn install"

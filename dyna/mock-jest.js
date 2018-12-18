@@ -28,7 +28,7 @@ global.describe = (description, cbDefineIts) => {
 	startTests();
 };
 
-global.describe.skip = () => undefined;
+global.describe.skip = description => global.describe(description, ()=>console.log('               --> skipped'));
 
 global.it = (description, cbTest) => {
 	global._mockJest.descriptions[global._mockJest.descriptions.length - 1].its.push({
@@ -38,7 +38,7 @@ global.it = (description, cbTest) => {
 	startTests();
 };
 
-global.it.skip = () => undefined;
+global.it.skip = description => global.it(description, () => console.log('          --> skipped'));
 
 global.expect = (expectValue) => {
 	return comparisons(expectValue);
