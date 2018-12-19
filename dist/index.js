@@ -491,7 +491,12 @@ function () {
             processId: processId
           }
         });
-        return;
+        return; // exit
+      }
+
+      if (!process.active) {
+        resolve();
+        return; // exit
       }
 
       var resolve_ = function () {
