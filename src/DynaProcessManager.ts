@@ -86,14 +86,22 @@ export class DynaProcessManager {
         return; // exit
       }
 
-      const resolve_ = () => {
+      const handleStop = () => {
+        process.off(EDynaProcessEvent.STOP, handleStop);
         resolve();
       };
 
-      process.on(EDynaProcessEvent.STOP, resolve_);
-      process.on(EDynaProcessEvent.CRASH, resolve_);
+      const handleCrash = () => {
+        process.off(EDynaProcessEvent.CRASH, handleCrash);
+        resolve();
+      };
 
-      process.stop();
+      process.on(EDynaProcessEvent.STOP, handleStop);
+      process.on(EDynaProcessEvent.CRASH, handleCrash);
+
+      setTimeout(() => {
+        process.stop();
+      }, 10);
     });
   }
 

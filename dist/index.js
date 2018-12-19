@@ -278,7 +278,11 @@ function (_super) {
     // help: https://nodejs.org/api/child_process.html#child_process_subprocess_kill_signal
     this._stopCalled = true;
 
-    this._process.kill(signal);
+    try {
+      this._process.kill(signal);
+    } catch (error) {
+      this.emit(EDynaProcessEvent.CRASH, error);
+    }
   };
 
   DynaProcess.prototype._handleOnConsoleLog = function (text) {
@@ -499,13 +503,21 @@ function () {
         return; // exit
       }
 
-      var resolve_ = function () {
+      var handleStop = function () {
+        process.off(DynaProcess_1.EDynaProcessEvent.STOP, handleStop);
         resolve();
       };
 
-      process.on(DynaProcess_1.EDynaProcessEvent.STOP, resolve_);
-      process.on(DynaProcess_1.EDynaProcessEvent.CRASH, resolve_);
-      process.stop();
+      var handleCrash = function () {
+        process.off(DynaProcess_1.EDynaProcessEvent.CRASH, handleCrash);
+        resolve();
+      };
+
+      process.on(DynaProcess_1.EDynaProcessEvent.STOP, handleStop);
+      process.on(DynaProcess_1.EDynaProcessEvent.CRASH, handleCrash);
+      setTimeout(function () {
+        process.stop();
+      }, 10);
     });
   };
 

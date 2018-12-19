@@ -76,8 +76,14 @@ describe('Dyna process manager - should restart the failed process and stop it o
     expect(pm.count).toBe(1);
   });
 
-  it('should remove the processes', () => {
-    pm.removeProcess(myProcess.id);
-    expect(pm.count).toBe(0);
+  it('should remove the processes', (done: () => void) => {
+    pm.removeProcess(myProcess.id)
+      .then(() => {
+        expect(pm.count).toBe(0);
+        done();
+      })
+      .catch((error) => {
+        throw(error);
+      });
   });
 });

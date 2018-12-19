@@ -116,7 +116,12 @@ export class DynaProcess extends EventEmitter {
   public stop(signal?: string): void {
     // help: https://nodejs.org/api/child_process.html#child_process_subprocess_kill_signal
     this._stopCalled = true;
-    this._process.kill(signal);
+    try {
+      this._process.kill(signal);
+    }
+    catch (error) {
+      this.emit(EDynaProcessEvent.CRASH, error);
+    }
   }
 
   private _handleOnConsoleLog(text: string): void {
