@@ -8,7 +8,7 @@
   },
   "sideEffects": false,
   "main": "./dist/index.js",
-  "typings": "./dist/src/index.d.ts",
+  "typings": "./dist/index.d.ts",
   "scripts": {
     "clear": "rimraf build temp",
     "lint": "tslint './src/**/*.ts*' --format stylish --force",
