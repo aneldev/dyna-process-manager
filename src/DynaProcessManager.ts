@@ -78,7 +78,12 @@ export class DynaProcessManager {
           message: 'Process not found with this id',
           data: {processId},
         });
-        return;
+        return; // exit
+      }
+
+      if (!process.active) {
+        resolve();
+        return; // exit
       }
 
       const resolve_ = () => {
