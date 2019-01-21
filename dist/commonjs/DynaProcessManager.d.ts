@@ -1,4 +1,4 @@
-import { IDynaLoggerConfig } from "dyna-logger/node";
+import { IDynaLoggerConfig } from "dyna-logger";
 import { DynaProcess, IDynaProcessConfig } from "./DynaProcess";
 export interface IDynaProcessManagerConfig {
     loggerSettings?: IDynaLoggerConfig;

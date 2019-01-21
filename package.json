@@ -7,8 +7,10 @@
     "url": "http://github.com/aneldev/dyna-process-manager"
   },
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "main": "dist/commonjs/index.js",
+  "types": "dist/commonjs/index.d.ts",
+  "esnext": "dist/es2015/index.d.ts",
+  "source": "src/index.ts",
   "scripts": {
     "clear": "rimraf build temp",
     "lint": "tslint './src/**/*.ts*' --format stylish --force",
@@ -28,12 +30,7 @@
     "debug-tests-run": "node --expose-gc debug-ground/debug-test-on-nodejs/index.js",
     "sync-externals": "node syncExternals.js",
     "build-analyze": "set NODE_ENV=development && webpack --config webpack.dist.analyze.config.js",
-    "build-watch": "set NODE_ENV=development && webpack --config webpack.dist.config.js --watch",
-    "build-tsc-watch": "tsc -w",
-    "build": "rimraf ./dist/ && yarn run .build-index.d.ts && yarn run .build-dist",
-    ".build-index.d.ts": "tsc && yarn run .build-index.d.ts-clear",
-    ".build-index.d.ts-clear": "cd dist/ && find . -name \\*.js -delete && cd .. && rimraf temp",
-    ".build-dist": "set NODE_ENV=development && webpack --config webpack.dist.config.js",
+    "build": "rm -rf ./dist && tsc --p tsconfig.commonjs.json && tsc --p tsconfig.es2015.json",
     "release": "yarn run build && yarn run publish-push",
     "test": "jest --coverage --no-cache --runInBand",
     "test-watch": "jest --watch --verbose --runInBand",
@@ -50,8 +47,7 @@
   "license": "MIT",
   "dependencies": {
     "dyna-guid": "^1.0.2",
-    "dyna-logger": "^4.0.0",
-    "eventemitter3": "^2.0.3",
+    "dyna-logger": "^5.0.0",
     "which": "^1.3.1"
   },
   "devDependencies": {

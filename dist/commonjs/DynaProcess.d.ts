@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import { EventEmitter } from 'events';
-import { DynaLogger, IDynaLoggerConfig } from "dyna-logger/node";
+import { EventEmitter } from "events";
+import { DynaLogger, IDynaLoggerConfig } from "dyna-logger";
 export interface IDynaProcessConfig {
     name: string;
     cwd: string;

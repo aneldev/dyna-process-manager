@@ -1,3 +1,5 @@
+// WARNING: Do not use any other loader, since are ignored from the final build!
+
 module.exports = [
 	{
 		test: /\.js$/,

@@ -1,37 +1,49 @@
-﻿const fs = require('fs');
-const moduleSetup = require('./module-setup');
+﻿// help: http://webpack.github.io/docs/configuration.html
+// help: https://webpack.github.io/docs/webpack-dev-server.html#webpack-dev-server-cli
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
+
 const package_ = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
+const rules = require('./webpack.loaders');
+const plugins = require('./webpack.plugins');
 
-const webpackDefaultSetup = require('./webpack.dist.default.config');
-const webpackWebSetup = require('./webpack.dist.web.config');
-const webpackNodeSetup = require('./webpack.dist.node.config');
-
-[
-	'./web.js',
-	'./web.js.map',
-	'./node.js',
-	'./node.js.map',
-].forEach(file => {
-	if (fs.existsSync(file)) fs.unlinkSync(file);
-});
-
-const config = [];
-
-if (moduleSetup.defaultTarget) {
-	config.push(webpackDefaultSetup);
-	console.log('module-setup: Build "' + package_.name + '", targeting', webpackDefaultSetup.target);
-}
-if (moduleSetup.outputWeb) {
-	config.push(webpackWebSetup);
-	console.log('module-setup: Build "' + package_.name + '/web"');
-}
-if (moduleSetup.outputNode) {
-	config.push(webpackNodeSetup);
-	console.log('module-setup: Build "' + package_.name + '/node"');
-}
-
-if (config.length === 0) {
-	console.log('module-setup: Error there is nothing defined to build, check the `/nodule-setup.js`');
-}
+const config = {
+  mode: "development",  // do not minify the code, this part of the app, not of the module
+  target: 'web',        // help: https://webpack.github.io/docs/configuration.html#target
+  entry: {
+    index: './src/index.ts',
+  },
+  externals: [nodeExternals()].concat(['fs', 'path']), // in order to ignore all modules in node_modules folder
+  optimization: {
+    usedExports: true,       // true to remove the dead code, for more https://webpack.js.org/guides/tree-shaking/
+  },
+  devtool: "source-map",     // help: https://webpack.js.org/configuration/devtool/
+  output: {
+    path: path.resolve(__dirname, 'temp/dist'),
+    filename: '[name].js',
+    publicPath: '/temp/dist/',
+    library: package_.name,
+    libraryTarget: 'umd',
+    umdNamedDefine: true
+  },
+  resolve: {
+    alias: {},
+    extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".jsx"]
+  },
+  module: {
+    rules,
+  },
+  node: {
+    // universal app? place here your conditional imports for node env
+    fs: "empty",
+    path: "empty",
+    child_process: "empty",
+  },
+  plugins: [
+    new webpack.NamedModulesPlugin(),             // prints more readable module names in the browser console on HMR updates
+  ].concat(plugins),
+};
 
 module.exports = config;

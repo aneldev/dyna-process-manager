@@ -1,10 +1,10 @@
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
-import * as cp                         from 'child_process';
-import * as which                      from "which";
-import {IError}                        from "./interfaces";
-import {EventEmitter}                  from 'events';
-import {guid}                          from "dyna-guid";
-import {DynaLogger, IDynaLoggerConfig} from "dyna-logger/node";
+import * as cp from "child_process";
+import * as which from "which";
+import {IError} from "./interfaces";
+import {EventEmitter} from "events";
+import {guid} from "dyna-guid";
+import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
 
 const EOL: string = require('os').EOL;
 
@@ -48,11 +48,11 @@ export class DynaProcess extends EventEmitter {
 
   private _id: string = guid(1);
   private _active: boolean = false;
-  private _process: cp.ChildProcess = null;
-  private _startedAt: Date = null;
-  private _stoppedAt: Date = null;
+  private _process: cp.ChildProcess;
+  private _startedAt: Date | null= null;
+  private _stoppedAt: Date | null= null;
   private _stopCalled: boolean = false;
-  private _lastExitCode: number = null;
+  private _lastExitCode: number | null= null;
 
   public logger: DynaLogger;
 
@@ -176,8 +176,8 @@ export class DynaProcess extends EventEmitter {
   }
 
   private static cleanProcessConsole(text: any): string {
-    text=text.toString();
-    if (text.endsWith(EOL)) text=text.slice(0, -EOL.length);
+    text = text.toString();
+    if (text.endsWith(EOL)) text = text.slice(0, -EOL.length);
     return text;
   }
 }
