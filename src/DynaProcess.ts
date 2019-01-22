@@ -162,6 +162,7 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _handleProcessError(error: any): void {
+    // todo: bug: This error message might be also console.warn!
     this._consoleError('general error', {error, pid: this._process.pid});
   }
 
