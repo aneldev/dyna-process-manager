@@ -48,7 +48,6 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
-        console.debug('VERSION 3');
         _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new dyna_logger_1.DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
