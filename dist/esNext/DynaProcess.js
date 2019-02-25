@@ -45,7 +45,7 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
-        _this._lastExitCode = null;
+        console.debug('### new version of process v2');
         _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
@@ -102,10 +102,10 @@ var DynaProcess = /** @class */ (function (_super) {
                 _this._process.stdout.on('data', function (text) { return _this._handleOnConsoleLog(text); });
                 _this._process.stderr.on('data', function (text) { return _this._handleOnConsoleError(text); });
                 _this._process.on('close', function (code, signal) { return _this._handleOnClose(code, signal); });
+                _this._process.on('exit', function (code, signal) { return _this._handleOnClose(code, signal); });
                 _this._process.on('error', function (error) { return _this._handleProcessError(error); });
                 _this._startedAt = new Date();
                 _this._stoppedAt = null;
-                _this._lastExitCode = null;
                 resolve(true);
             }
             catch (error) {
@@ -134,15 +134,16 @@ var DynaProcess = /** @class */ (function (_super) {
     };
     DynaProcess.prototype._handleOnConsoleError = function (text) {
         this._consoleError(text, null, true);
-        this.emit(EDynaProcessEvent.CONSOLE_ERROR);
+        this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
     };
     DynaProcess.prototype._handleOnClose = function (exitCode, signal) {
         var _this = this;
+        if (!this._active)
+            return; // is already exited
         // help: https://nodejs.org/api/child_process.html#child_process_event_close
         var guard = this._config.guard;
         this._active = false;
         this._stoppedAt = new Date;
-        this._lastExitCode = exitCode;
         if (exitCode) {
             this._consoleError("Crashed! Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
             this.emit(EDynaProcessEvent.CRASH, { exitCode: exitCode });
@@ -163,14 +164,26 @@ var DynaProcess = /** @class */ (function (_super) {
         }
     };
     DynaProcess.prototype._handleProcessError = function (error) {
-        // todo: bug: This error message might be also console.warn!
-        this._consoleError('general error', { error: error, pid: this._process.pid });
+        if (this._isWarning(error))
+            this._consoleWarn("warning: " + error.message, { warn: error, pid: this._process.pid });
+        else
+            this._consoleError("error: " + error.message, { error: error, pid: this._process.pid });
+    };
+    DynaProcess.prototype._isWarning = function (error) {
+        var errorMessage = error.message && error.message.toLocaleLowerCase();
+        return errorMessage.indexOf('warning') === 0 || errorMessage.indexOf('warn') === 0;
     };
     DynaProcess.prototype._consoleLog = function (message, data, processSays) {
         if (data === void 0) { data = undefined; }
         if (processSays === void 0) { processSays = false; }
         message = DynaProcess.cleanProcessConsole(message);
         this.logger.log("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
+    };
+    DynaProcess.prototype._consoleWarn = function (message, data, processSays) {
+        if (data === void 0) { data = undefined; }
+        if (processSays === void 0) { processSays = false; }
+        message = DynaProcess.cleanProcessConsole(message);
+        this.logger.warn("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
     };
     DynaProcess.prototype._consoleError = function (message, data, processSays) {
         if (data === void 0) { data = undefined; }

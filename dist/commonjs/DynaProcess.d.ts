@@ -27,7 +27,6 @@ export declare class DynaProcess extends EventEmitter {
     private _startedAt;
     private _stoppedAt;
     private _stopCalled;
-    private _lastExitCode;
     logger: DynaLogger;
     readonly id: string;
     readonly active: boolean;
@@ -38,7 +37,9 @@ export declare class DynaProcess extends EventEmitter {
     private _handleOnConsoleError;
     private _handleOnClose;
     private _handleProcessError;
+    private _isWarning;
     private _consoleLog;
+    private _consoleWarn;
     private _consoleError;
     private static cleanProcessConsole;
 }
