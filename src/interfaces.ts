@@ -14,7 +14,7 @@ export interface IWarn{
 
 export interface IError{
 	section: string;
-	code: string;
+	code: number;
 	message?: string;
 	error?: any;
 	data?: any;

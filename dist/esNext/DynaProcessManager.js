@@ -33,7 +33,7 @@ var DynaProcessManager = /** @class */ (function () {
             if (!process) {
                 reject({
                     section: 'ProcessManager/removeProcess',
-                    code: '3598644',
+                    code: 3598644,
                     message: 'Process not found with this id',
                     data: { processId: processId },
                 });
@@ -42,7 +42,7 @@ var DynaProcessManager = /** @class */ (function () {
             if (process.active) {
                 reject({
                     section: 'ProcessManager/removeProcess',
-                    code: '3598645',
+                    code: 3598645,
                     message: 'Process is working',
                     data: { processId: processId },
                 });
@@ -69,7 +69,7 @@ var DynaProcessManager = /** @class */ (function () {
             if (!process) {
                 reject({
                     section: 'ProcessManager/stop',
-                    code: '3598643',
+                    code: 3598643,
                     message: 'Process not found with this id',
                     data: { processId: processId },
                 });

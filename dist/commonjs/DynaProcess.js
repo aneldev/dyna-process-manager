@@ -50,8 +50,12 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._lastExitCode = null;
         _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new dyna_logger_1.DynaLogger(_this._config.loggerSettings);
-        if (_this._config.command === "node")
+        if (_this._config.command === "node") {
             _this._config.command = which.sync('node', { nothrow: true });
+            if (!_this._config.command) {
+                console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
+            }
+        }
         return _this;
     }
     Object.defineProperty(DynaProcess.prototype, "id", {
@@ -82,6 +86,15 @@ var DynaProcess = /** @class */ (function (_super) {
                 : args.split(' ').filter(function (a) { return !!a; });
             if (_this._active)
                 resolve(false);
+            if (!command) {
+                reject({
+                    code: 1902250950,
+                    section: 'DynaProcess/start',
+                    message: 'Process cannot start while command is not defined',
+                    data: { command: command },
+                });
+                return;
+            }
             try {
                 _this._process = cp.spawn(command, applyArgs, {
                     cwd: cwd,
@@ -152,6 +165,7 @@ var DynaProcess = /** @class */ (function (_super) {
         }
     };
     DynaProcess.prototype._handleProcessError = function (error) {
+        // todo: bug: This error message might be also console.warn!
         this._consoleError('general error', { error: error, pid: this._process.pid });
     };
     DynaProcess.prototype._consoleLog = function (message, data, processSays) {

@@ -37,7 +37,7 @@ export class DynaProcessManager {
       if (!process) {
         reject({
           section: 'ProcessManager/removeProcess',
-          code: '3598644',
+          code: 3598644,
           message: 'Process not found with this id',
           data: {processId},
         });
@@ -47,7 +47,7 @@ export class DynaProcessManager {
       if (process.active) {
         reject({
           section: 'ProcessManager/removeProcess',
-          code: '3598645',
+          code: 3598645,
           message: 'Process is working',
           data: {processId},
         });
@@ -74,7 +74,7 @@ export class DynaProcessManager {
       if (!process) {
         reject({
           section: 'ProcessManager/stop',
-          code: '3598643',
+          code: 3598643,
           message: 'Process not found with this id',
           data: {processId},
         });

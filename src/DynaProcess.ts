@@ -11,7 +11,7 @@ const EOL: string = require('os').EOL;
 export interface IDynaProcessConfig {
   name: string;               // name this process for console messages and stats
   cwd: string;                // Current working directory of the child process
-  command: string;            // full executable filename
+  command: string | null;     // full executable filename
   args?: string | string[];   // arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
@@ -43,7 +43,12 @@ export class DynaProcess extends EventEmitter {
 
     this.logger = new DynaLogger(this._config.loggerSettings);
 
-    if (this._config.command === "node") this._config.command = which.sync('node', {nothrow: true});
+    if (this._config.command === "node") {
+      this._config.command = which.sync('node', {nothrow: true});
+      if (!this._config.command) {
+        console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
+      }
+    }
   }
 
   private _id: string = guid(1);
@@ -77,7 +82,17 @@ export class DynaProcess extends EventEmitter {
         Array.isArray(args)
           ? args
           : (args as string).split(' ').filter(a => !!a);
+
       if (this._active) resolve(false);
+      if (!command) {
+        reject({
+          code: 1902250950,
+          section: 'DynaProcess/start',
+          message: 'Process cannot start while command is not defined',
+          data: {command},
+        } as IError);
+        return;
+      }
 
       try {
         this._process = cp.spawn(
