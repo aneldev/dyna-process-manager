@@ -4,7 +4,7 @@ import { DynaLogger, IDynaLoggerConfig } from "dyna-logger";
 export interface IDynaProcessConfig {
     name: string;
     cwd: string;
-    command: string;
+    command: string | null;
     args?: string | string[];
     env?: any;
     guard?: IDynaProcessConfigGuard;
