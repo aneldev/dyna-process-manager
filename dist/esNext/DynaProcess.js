@@ -34,6 +34,7 @@ export var EDynaProcessEvent;
     EDynaProcessEvent["STOP"] = "STOP";
     EDynaProcessEvent["CRASH"] = "CRASH";
     EDynaProcessEvent["CONSOLE_ERROR"] = "CONSOLE_ERROR";
+    EDynaProcessEvent["CONSOLE_WARN"] = "CONSOLE_WARN";
 })(EDynaProcessEvent || (EDynaProcessEvent = {}));
 var DynaProcess = /** @class */ (function (_super) {
     __extends(DynaProcess, _super);
@@ -45,6 +46,7 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
+        console.debug('VERSION 3');
         _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
@@ -131,9 +133,16 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._handleOnConsoleLog = function (text) {
         this._consoleLog(text, null, true);
     };
-    DynaProcess.prototype._handleOnConsoleError = function (text) {
-        this._consoleError(text, null, true);
-        this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
+    DynaProcess.prototype._handleOnConsoleError = function (chunk) {
+        var text = chunk.toString();
+        if (this._isTextWarning(text)) {
+            this._consoleWarn(text, null, true);
+            this.emit(EDynaProcessEvent.CONSOLE_WARN, text);
+        }
+        else {
+            this._consoleError(text, null, true);
+            this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
+        }
     };
     DynaProcess.prototype._handleOnClose = function (exitCode, signal) {
         var _this = this;
@@ -163,14 +172,22 @@ var DynaProcess = /** @class */ (function (_super) {
         }
     };
     DynaProcess.prototype._handleProcessError = function (error) {
-        if (this._isWarning(error))
+        if (this._isErrorWarning(error))
             this._consoleWarn("warning: " + error.message, { warn: error, pid: this._process.pid });
         else
             this._consoleError("error: " + error.message, { error: error, pid: this._process.pid });
     };
-    DynaProcess.prototype._isWarning = function (error) {
-        var errorMessage = error.message && error.message.toLocaleLowerCase();
-        return errorMessage.indexOf('warning') === 0 || errorMessage.indexOf('warn') === 0;
+    DynaProcess.prototype._isErrorWarning = function (error) {
+        return this._isTextWarning(error.message || '');
+    };
+    DynaProcess.prototype._isTextWarning = function (text) {
+        text = text.toLowerCase();
+        debugger;
+        return (this._inRange(text.indexOf('warning:'), 0, 30) ||
+            this._inRange(text.indexOf('warn:'), 0, 30));
+    };
+    DynaProcess.prototype._inRange = function (value, from, to) {
+        return value >= from && value <= to;
     };
     DynaProcess.prototype._consoleLog = function (message, data, processSays) {
         if (data === void 0) { data = undefined; }

@@ -16,7 +16,8 @@ export interface IDynaProcessConfigGuard {
 export declare enum EDynaProcessEvent {
     STOP = "STOP",
     CRASH = "CRASH",
-    CONSOLE_ERROR = "CONSOLE_ERROR"
+    CONSOLE_ERROR = "CONSOLE_ERROR",
+    CONSOLE_WARN = "CONSOLE_WARN"
 }
 export declare class DynaProcess extends EventEmitter {
     private readonly _config;
@@ -37,7 +38,9 @@ export declare class DynaProcess extends EventEmitter {
     private _handleOnConsoleError;
     private _handleOnClose;
     private _handleProcessError;
-    private _isWarning;
+    private _isErrorWarning;
+    private _isTextWarning;
+    private _inRange;
     private _consoleLog;
     private _consoleWarn;
     private _consoleError;

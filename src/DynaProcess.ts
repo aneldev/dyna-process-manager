@@ -26,6 +26,7 @@ export enum EDynaProcessEvent {
   STOP = 'STOP',                   // process terminated normally (exit code == 0)
   CRASH = 'CRASH',                 // process terminated due to exception (exit code!== 0)
   CONSOLE_ERROR = 'CONSOLE_ERROR', // errors detected from console.errors of the process
+  CONSOLE_WARN = 'CONSOLE_WARN',
 }
 
 export class DynaProcess extends EventEmitter {
@@ -142,9 +143,16 @@ export class DynaProcess extends EventEmitter {
     this._consoleLog(text, null, true);
   }
 
-  private _handleOnConsoleError(text: string): void {
-    this._consoleError(text, null, true);
-    this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
+  private _handleOnConsoleError(chunk: any): void {
+    const text = chunk.toString();
+    if (this._isTextWarning(text)) {
+      this._consoleWarn(text, null, true);
+      this.emit(EDynaProcessEvent.CONSOLE_WARN, text);
+    }
+    else {
+      this._consoleError(text, null, true);
+      this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
+    }
   }
 
   private _handleOnClose(exitCode: number, signal: string): void {
@@ -177,15 +185,27 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _handleProcessError(error: Error): void {
-    if (this._isWarning(error))
+    if (this._isErrorWarning(error))
       this._consoleWarn(`warning: ${error.message}`, {warn: error, pid: this._process.pid});
     else
       this._consoleError(`error: ${error.message}`, {error, pid: this._process.pid});
   }
 
-  private _isWarning(error: Error): boolean {
-    const errorMessage = error.message && error.message.toLocaleLowerCase();
-    return errorMessage.indexOf('warning') === 0 || errorMessage.indexOf('warn') === 0;
+  private _isErrorWarning(error: Error): boolean {
+    return this._isTextWarning(error.message || '');
+  }
+
+  private _isTextWarning(text: string): boolean {
+    text = text.toLowerCase();
+    debugger;
+    return (
+      this._inRange(text.indexOf('warning:'), 0, 30) ||
+      this._inRange(text.indexOf('warn:'), 0, 30)
+    );
+  }
+
+  private _inRange(value: number, from: number, to: number): boolean {
+    return value >= from && value <= to;
   }
 
   private _consoleLog(message: string, data: any = undefined, processSays: boolean = false): void {
