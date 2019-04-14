@@ -183,7 +183,6 @@ var DynaProcess = /** @class */ (function (_super) {
     };
     DynaProcess.prototype._isTextWarning = function (text) {
         text = text.toLowerCase();
-        debugger;
         return (this._inRange(text.indexOf('warning:'), 0, 30) ||
             this._inRange(text.indexOf('warn:'), 0, 30));
     };
