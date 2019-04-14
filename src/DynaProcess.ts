@@ -197,7 +197,6 @@ export class DynaProcess extends EventEmitter {
 
   private _isTextWarning(text: string): boolean {
     text = text.toLowerCase();
-    debugger;
     return (
       this._inRange(text.indexOf('warning:'), 0, 30) ||
       this._inRange(text.indexOf('warn:'), 0, 30)
