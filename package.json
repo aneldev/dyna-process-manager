@@ -1,6 +1,6 @@
 {
   "name": "dyna-process-manager",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Process manager for node.js",
   "repository": {
     "type": "git",
