@@ -16,6 +16,7 @@ export interface IDynaProcessConfig {
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
   loggerSettings?: IDynaLoggerConfig;
+  onClose?: (exitCode: number, signal: string) => void;
 }
 
 export interface IDynaProcessConfigGuard {
@@ -157,9 +158,9 @@ export class DynaProcess extends EventEmitter {
 
   private _handleOnClose(exitCode: number, signal: string): void {
     if (!this._active) return; // is already exited
+    const {guard, onClose} = this._config;
 
     // help: https://nodejs.org/api/child_process.html#child_process_event_close
-    const {guard} = this._config;
 
     this._active = false;
     this._stoppedAt = new Date;
@@ -175,12 +176,14 @@ export class DynaProcess extends EventEmitter {
         }
         else {
           this.emit(EDynaProcessEvent.STOP);
+          onClose && onClose(exitCode, signal);
         }
       }
     }
     else {
       this._consoleLog(`Stopped. Exited with exit code [${exitCode}] and signal [${signal}]`);
       this.emit(EDynaProcessEvent.STOP);
+      onClose && onClose(exitCode, signal);
     }
   }
 

@@ -18,6 +18,7 @@ interface IDynaProcessConfig {
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
   loggerSettings?: IDynaLoggerSettings;
+  onClose?: (exitCode: number, signal: string) => void;
 }
 
 interface IDynaProcessConfigGuard {

@@ -9,6 +9,7 @@ export interface IDynaProcessConfig {
     env?: any;
     guard?: IDynaProcessConfigGuard;
     loggerSettings?: IDynaLoggerConfig;
+    onClose?: (exitCode: number, signal: string) => void;
 }
 export interface IDynaProcessConfigGuard {
     restartAfterMs: number;

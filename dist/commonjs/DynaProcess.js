@@ -149,8 +149,8 @@ var DynaProcess = /** @class */ (function (_super) {
         var _this = this;
         if (!this._active)
             return; // is already exited
+        var _a = this._config, guard = _a.guard, onClose = _a.onClose;
         // help: https://nodejs.org/api/child_process.html#child_process_event_close
-        var guard = this._config.guard;
         this._active = false;
         this._stoppedAt = new Date;
         if (exitCode) {
@@ -164,12 +164,14 @@ var DynaProcess = /** @class */ (function (_super) {
                 }
                 else {
                     this.emit(EDynaProcessEvent.STOP);
+                    onClose && onClose(exitCode, signal);
                 }
             }
         }
         else {
             this._consoleLog("Stopped. Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
             this.emit(EDynaProcessEvent.STOP);
+            onClose && onClose(exitCode, signal);
         }
     };
     DynaProcess.prototype._handleProcessError = function (error) {
