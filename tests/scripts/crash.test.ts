@@ -1,4 +1,5 @@
-declare let jasmine: any, describe: any, expect: any, it: any;
+import "jest";
+jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
 const STRESS_TEST: boolean = false;
 const ITEM_TIMEOUT_MS: number = 40;
@@ -8,7 +9,6 @@ const STRESS_ITEMS_COUNT: number = 200;
 const ITEMS_COUNT: number = STRESS_TEST && STRESS_ITEMS_COUNT || NORMAL_ITEMS_COUNT;
 let timeout = (STRESS_TEST && STRESS_ITEMS_COUNT || NORMAL_ITEMS_COUNT) * ITEM_TIMEOUT_MS;
 if (timeout < 3000) timeout = 3000;
-if (typeof jasmine !== 'undefined') jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
 
 console.log('Test info: items:', ITEMS_COUNT, 'timeout:', timeout);
 

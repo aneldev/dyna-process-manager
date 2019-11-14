@@ -1,5 +1,5 @@
-declare let jasmine: any, describe: any, expect: any, it: any;
-if (typeof jasmine !== 'undefined') jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+import "jest";
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
 import {DynaProcessManager, EDynaProcessEvent, DynaProcess} from '../../src';
 import {IError}                                             from "../../src/interfaces";
