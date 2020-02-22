@@ -1,10 +1,12 @@
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
 import * as cp from "child_process";
 import * as which from "which";
-import {IError} from "./interfaces";
-import {EventEmitter} from "events";
+
 import {guid} from "dyna-guid";
+import {EventEmitter} from "events";
 import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
+
+import {IError} from "./interfaces";
 
 const EOL: string = require('os').EOL;
 
@@ -141,17 +143,17 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _handleOnConsoleLog(text: string): void {
-    this._consoleLog(text, null, true);
+    this._consoleLog(text, true);
   }
 
   private _handleOnConsoleError(chunk: any): void {
     const text = chunk.toString();
     if (this._isTextWarning(text)) {
-      this._consoleWarn(text, null, true);
+      this._consoleWarn(text, true, null);
       this.emit(EDynaProcessEvent.CONSOLE_WARN, text);
     }
     else {
-      this._consoleError(text, null, true);
+      this._consoleError(text, true, null);
       this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
     }
   }
@@ -166,7 +168,7 @@ export class DynaProcess extends EventEmitter {
     this._stoppedAt = new Date;
 
     if (exitCode) {
-      this._consoleError(`Crashed! Exited with exit code [${exitCode}] and signal [${signal}]`,);
+      this._consoleError(`Crashed! Exited with exit code [${exitCode}] and signal [${signal}]`);
       this.emit(EDynaProcessEvent.CRASH, {exitCode});
       if (guard) {
         if (!this._stopCalled) {
@@ -189,9 +191,9 @@ export class DynaProcess extends EventEmitter {
 
   private _handleProcessError(error: Error): void {
     if (this._isErrorWarning(error))
-      this._consoleWarn(`warning: ${error.message}`, {warn: error, pid: this._process.pid});
+      this._consoleWarn(`warning: ${error.message}`, false, {warn: error, pid: this._process.pid});
     else
-      this._consoleError(`error: ${error.message}`, {error, pid: this._process.pid});
+      this._consoleError(`error: ${error.message}`, false, {error, pid: this._process.pid});
   }
 
   private _isErrorWarning(error: Error): boolean {
@@ -210,19 +212,19 @@ export class DynaProcess extends EventEmitter {
     return value >= from && value <= to;
   }
 
-  private _consoleLog(message: string, data: any = undefined, processSays: boolean = false): void {
+  private _consoleLog(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.log(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
+    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id})
   }
 
-  private _consoleWarn(message: string, data: any = undefined, processSays: boolean = false): void {
+  private _consoleWarn(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.warn(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
+    this.logger.warn(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
-  private _consoleError(message: string, data: any = undefined, processSays: boolean = false): void {
+  private _consoleError(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.error(`Process: ${this._config.name} ${this.id}`, `${processSays ? '> ' : ''}${message}`, data)
+    this.logger.error(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
   private static cleanProcessConsole(text: any): string {
