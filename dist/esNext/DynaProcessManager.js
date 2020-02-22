@@ -16,6 +16,7 @@ var DynaProcessManager = /** @class */ (function () {
         if (_config === void 0) { _config = {}; }
         this._config = _config;
         this._processes = {};
+        var internalV = 3;
         this._config = __assign({}, this._config, { loggerSettings: __assign({ bufferLimit: 2000 }, (this._config.loggerSettings || {})) });
         this._logger = new DynaLogger(this._config.loggerSettings);
     }
