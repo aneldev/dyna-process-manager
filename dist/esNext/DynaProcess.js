@@ -25,8 +25,8 @@ var __assign = (this && this.__assign) || function () {
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
 import * as cp from "child_process";
 import * as which from "which";
-import { EventEmitter } from "events";
 import { guid } from "dyna-guid";
+import { EventEmitter } from "events";
 import { DynaLogger } from "dyna-logger";
 var EOL = require('os').EOL;
 export var EDynaProcessEvent;
@@ -130,16 +130,16 @@ var DynaProcess = /** @class */ (function (_super) {
         }
     };
     DynaProcess.prototype._handleOnConsoleLog = function (text) {
-        this._consoleLog(text, null, true);
+        this._consoleLog(text, true);
     };
     DynaProcess.prototype._handleOnConsoleError = function (chunk) {
         var text = chunk.toString();
         if (this._isTextWarning(text)) {
-            this._consoleWarn(text, null, true);
+            this._consoleWarn(text, true, null);
             this.emit(EDynaProcessEvent.CONSOLE_WARN, text);
         }
         else {
-            this._consoleError(text, null, true);
+            this._consoleError(text, true, null);
             this.emit(EDynaProcessEvent.CONSOLE_ERROR, text);
         }
     };
@@ -174,9 +174,9 @@ var DynaProcess = /** @class */ (function (_super) {
     };
     DynaProcess.prototype._handleProcessError = function (error) {
         if (this._isErrorWarning(error))
-            this._consoleWarn("warning: " + error.message, { warn: error, pid: this._process.pid });
+            this._consoleWarn("warning: " + error.message, false, { warn: error, pid: this._process.pid });
         else
-            this._consoleError("error: " + error.message, { error: error, pid: this._process.pid });
+            this._consoleError("error: " + error.message, false, { error: error, pid: this._process.pid });
     };
     DynaProcess.prototype._isErrorWarning = function (error) {
         return this._isTextWarning(error.message || '');
@@ -189,23 +189,23 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._inRange = function (value, from, to) {
         return value >= from && value <= to;
     };
-    DynaProcess.prototype._consoleLog = function (message, data, processSays) {
-        if (data === void 0) { data = undefined; }
+    DynaProcess.prototype._consoleLog = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
+        if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.log("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
+        this.logger.log("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
-    DynaProcess.prototype._consoleWarn = function (message, data, processSays) {
-        if (data === void 0) { data = undefined; }
+    DynaProcess.prototype._consoleWarn = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
+        if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.warn("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
+        this.logger.warn("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
-    DynaProcess.prototype._consoleError = function (message, data, processSays) {
-        if (data === void 0) { data = undefined; }
+    DynaProcess.prototype._consoleError = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
+        if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.error("Process: " + this._config.name + " " + this.id, "" + (processSays ? '> ' : '') + message, data);
+        this.logger.error("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.cleanProcessConsole = function (text) {
         text = text.toString();
