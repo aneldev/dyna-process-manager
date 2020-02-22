@@ -10,7 +10,6 @@ export {IDynaLoggerConfig};
 
 export class DynaProcessManager {
   constructor(private readonly _config: IDynaProcessManagerConfig = {}) {
-    const internalV = 3;
     this._config = {
       ...this._config,
       loggerSettings: {
