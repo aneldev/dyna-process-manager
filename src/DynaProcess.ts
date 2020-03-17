@@ -1,6 +1,7 @@
 // help: https://nodejs.org/api/child_process.html#child_process_child_process_spawn_command_args_options
 import * as cp from "child_process";
 import * as which from "which";
+import Signals = NodeJS.Signals;
 
 import {guid} from "dyna-guid";
 import {EventEmitter} from "events";
@@ -53,6 +54,25 @@ export class DynaProcess extends EventEmitter {
         console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
       }
     }
+
+    // For all termination signals, push the to the child.
+    // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
+    // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
+    [
+      "SIGTERM",
+      "SIGINT",
+      "SIGQUIT",
+      // "SIGKILL",
+      "SIGHUP",
+    ]
+      .forEach(signal => {
+        process.on(signal as Signals, () => {
+          console.debug('Passing termination signal', signal);
+          if (!this._active) return;
+          this.stop(signal);
+          process.exit(0);
+        });
+      });
   }
 
   private _id: string = guid(1);
