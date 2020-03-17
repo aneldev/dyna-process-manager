@@ -1,5 +1,5 @@
 import "jest";
-jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
 const STRESS_TEST: boolean = false;
 const ITEM_TIMEOUT_MS: number = 40;
@@ -25,7 +25,7 @@ const pm: DynaProcessManager = new DynaProcessManager({
 describe('Dyna process manager - simple test with success termination', () => {
   let myProcesses: DynaProcess[] = [];
 
-  it('should create the process', () => {
+  it('should create the processes', () => {
     Array(ITEMS_COUNT).fill(null).forEach(() => {
       let myProcess = pm.addProcess({
         name: 'process test 1',
@@ -38,7 +38,7 @@ describe('Dyna process manager - simple test with success termination', () => {
     });
   });
 
-  it('should start myProcess', (done: Function) => {
+  it('should start myProcesses', (done: Function) => {
     let started: number = 0;
     myProcesses.forEach((myProcess: DynaProcess) => {
       myProcess.start()
@@ -49,8 +49,8 @@ describe('Dyna process manager - simple test with success termination', () => {
           if (started === ITEMS_COUNT) done();
         })
         .catch((error: IError) => {
-          expect(error).toBe(null);
-          done();
+          fail(error);
+          if (started === ITEMS_COUNT) done();
         });
     });
   });
@@ -65,8 +65,7 @@ describe('Dyna process manager - simple test with success termination', () => {
         expect(myProcess.active).toBe(true);
       });
       done();
-    }, 1000);
-    //}, 500 + (ITEMS_COUNT * 5));
+    }, 500 + (ITEMS_COUNT * 5));
   });
 
   it('my processed should not work anymore', (done: Function) => {
