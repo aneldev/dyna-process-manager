@@ -1,5 +1,5 @@
 if (typeof process !== "undefined") {
   process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection', {promise, reason});
+    console.error('Dyna boilerplate: Unhandled Rejection; you should catch it!', {promise, reason});
   });
 }
