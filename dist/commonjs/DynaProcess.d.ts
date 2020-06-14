@@ -8,6 +8,7 @@ export interface IDynaProcessConfig {
     args?: string | string[];
     env?: any;
     guard?: IDynaProcessConfigGuard;
+    forceTerminationSignal?: boolean;
     loggerSettings?: IDynaLoggerConfig;
     consolePrefixProcessName?: boolean;
     onClose?: (exitCode: number, signal: string) => void;

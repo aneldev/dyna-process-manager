@@ -48,7 +48,7 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
-        _this._config = __assign({ env: {}, consolePrefixProcessName: true }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
+        _this._config = __assign({ env: {}, consolePrefixProcessName: true, forceTerminationSignal: false }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new dyna_logger_1.DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
             var resolvedNodeCommand = which.sync('node', { nothrow: true });
@@ -59,26 +59,28 @@ var DynaProcess = /** @class */ (function (_super) {
                 console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
             }
         }
-        // For all termination signals, push the to the child.
-        // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
-        // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
-        var terminationSignals = [
-            "SIGTERM",
-            "SIGINT",
-            "SIGQUIT",
-            "SIGHUP",
-        ];
-        (new Array())
-            .concat(terminationSignals, terminationSignals.map(function (s) { return s.toLowerCase(); }))
-            .forEach(function (signal) {
-            process.on(signal, function () {
-                console.debug('Passing termination signal', signal);
-                if (!_this._active)
-                    return;
-                _this.stop(signal);
-                process.exit(0);
+        if (_this._config.forceTerminationSignal) {
+            // For all termination signals, push the to the child.
+            // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
+            // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
+            var terminationSignals = [
+                "SIGTERM",
+                "SIGINT",
+                "SIGQUIT",
+                "SIGHUP",
+            ];
+            (new Array())
+                .concat(terminationSignals, terminationSignals.map(function (s) { return s.toLowerCase(); }))
+                .forEach(function (signal) {
+                process.on(signal, function () {
+                    console.debug('Passing termination signal', signal);
+                    if (!_this._active)
+                        return;
+                    _this.stop(signal);
+                    process.exit(0);
+                });
             });
-        });
+        }
         return _this;
     }
     Object.defineProperty(DynaProcess.prototype, "id", {
