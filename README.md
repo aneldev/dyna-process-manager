@@ -17,8 +17,9 @@ interface IDynaProcessConfig {
   args?: string | string[];   // Arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
+  forceTerminationSignal?: boolean;     // default: false, Force passing the termination signal to child process
   loggerSettings?: IDynaLoggerSettings;
-  consolePrefixProcessName?: boolean; // default: true
+  consolePrefixProcessName?: boolean;   // default: true
   onClose?: (exitCode: number, signal: string) => void;
 }
 

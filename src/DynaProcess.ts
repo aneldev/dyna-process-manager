@@ -21,8 +21,9 @@ export interface IDynaProcessConfig {
   args?: string | string[];   // Arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
+  forceTerminationSignal?: boolean;     // default: false, Force passing the termination signal to child process
   loggerSettings?: IDynaLoggerConfig;
-  consolePrefixProcessName?: boolean; // default: true
+  consolePrefixProcessName?: boolean;   // default: true
   onClose?: (exitCode: number, signal: string) => void;
 }
 
@@ -44,6 +45,7 @@ export class DynaProcess extends EventEmitter {
     this._config = {
       env: {},
       consolePrefixProcessName: true,
+      forceTerminationSignal: false,
       ...(this._config),
       loggerSettings: {
         bufferLimit: 2000,
@@ -63,30 +65,31 @@ export class DynaProcess extends EventEmitter {
       }
     }
 
-    // For all termination signals, push the to the child.
-    // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
-    // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
-    const terminationSignals: string[] = [
-      "SIGTERM",
-      "SIGINT",
-      "SIGQUIT",
-      "SIGHUP",
-      // "SIGKILL",
-    ];
+    if (this._config.forceTerminationSignal) {
+      // For all termination signals, push the to the child.
+      // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
+      // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
+      const terminationSignals: string[] = [
+        "SIGTERM",
+        "SIGINT",
+        "SIGQUIT",
+        "SIGHUP",
+      ];
 
-    (new Array<string>())
-      .concat(
-        terminationSignals,
-        terminationSignals.map(s => s.toLowerCase()),
-      )
-      .forEach(signal => {
-        process.on(signal as Signals, () => {
-          console.debug('Passing termination signal', signal);
-          if (!this._active) return;
-          this.stop(signal);
-          process.exit(0);
+      (new Array<string>())
+        .concat(
+          terminationSignals,
+          terminationSignals.map(s => s.toLowerCase()),
+        )
+        .forEach(signal => {
+          process.on(signal as Signals, () => {
+            console.debug('Passing termination signal', signal);
+            if (!this._active) return;
+            this.stop(signal);
+            process.exit(0);
+          });
         });
-      });
+    }
   }
 
   private _id: string = guid(1);
