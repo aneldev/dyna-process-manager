@@ -59,10 +59,6 @@ Returns startAt, stoppedAt and stopCalled
 
 Returns true if started and false if it was already started.
 
-The process is started automatically on `addProcess`.
-
-You can use this if you to re-start it later.
-
 ## stop(signal?: string): void
 
 # Pass object to new instances
