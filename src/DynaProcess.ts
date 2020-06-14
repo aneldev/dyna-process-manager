@@ -3,11 +3,14 @@ import * as cp from "child_process";
 import * as which from "which";
 import Signals = NodeJS.Signals;
 
-import {guid} from "dyna-guid";
-import {EventEmitter} from "events";
-import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
+import { guid } from "dyna-guid";
+import { EventEmitter } from "events";
+import {
+  DynaLogger,
+  IDynaLoggerConfig,
+} from "dyna-logger";
 
-import {IError} from "./interfaces";
+import { IError } from "./interfaces";
 
 const EOL: string = require('os').EOL;
 
@@ -69,7 +72,7 @@ export class DynaProcess extends EventEmitter {
     (new Array<string>())
       .concat(
         terminationSignals,
-        terminationSignals.map(s => s.toLowerCase())
+        terminationSignals.map(s => s.toLowerCase()),
       )
       .forEach(signal => {
         process.on(signal as Signals, () => {
@@ -84,8 +87,8 @@ export class DynaProcess extends EventEmitter {
   private _id: string = guid(1);
   private _active: boolean = false;
   private _process: cp.ChildProcess;
-  private _startedAt: Date | null= null;
-  private _stoppedAt: Date | null= null;
+  private _startedAt: Date | null = null;
+  private _stoppedAt: Date | null = null;
   private _stopCalled: boolean = false;
 
   public logger: DynaLogger;
@@ -98,13 +101,21 @@ export class DynaProcess extends EventEmitter {
     return this._active;
   }
 
+  public get info() {
+    return {
+      startedAt: this._startedAt,
+      stoppedAt: this._stoppedAt,
+      stopCalled: this._stopCalled,
+    };
+  }
+
   // returns true if started and false if it was already started; rejects on errors
   public start(): Promise<boolean> {
     this._stopCalled = false;
     return this._start();
   }
 
-  public _start(): Promise<boolean> {
+  private _start(): Promise<boolean> {
     return new Promise((resolve: (started: boolean) => void, reject: (error: IError) => void) => {
       const {command, args, cwd, env} = this._config;
       let applyArgs: string[] =
@@ -129,8 +140,8 @@ export class DynaProcess extends EventEmitter {
           applyArgs,
           {
             cwd,
-            env
-          }
+            env,
+          },
         );
 
         this._active = true;
@@ -144,15 +155,14 @@ export class DynaProcess extends EventEmitter {
         this._startedAt = new Date();
         this._stoppedAt = null;
         resolve(true);
-      }
-      catch (error) {
+      } catch (error) {
         this._active = false;
         reject({
           section: 'DynaProcess/start',
           message: 'Process cannot start',
           error,
           data: {processSetup: this._config},
-        } as IError)
+        } as IError);
       }
     });
   }
@@ -162,8 +172,7 @@ export class DynaProcess extends EventEmitter {
     this._stopCalled = true;
     try {
       this._process.kill(signal);
-    }
-    catch (error) {
+    } catch (error) {
       this.emit(EDynaProcessEvent.CRASH, error);
     }
   }
@@ -240,7 +249,7 @@ export class DynaProcess extends EventEmitter {
 
   private _consoleLog(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id})
+    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
   private _consoleWarn(message: string, processSays: boolean = false, data: any = {}): void {

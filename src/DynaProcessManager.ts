@@ -1,12 +1,19 @@
-import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
-import {DynaProcess, EDynaProcessEvent, IDynaProcessConfig} from "./DynaProcess";
-import {IError} from "./interfaces";
+import {
+  DynaLogger,
+  IDynaLoggerConfig,
+} from "dyna-logger";
+import {
+  DynaProcess,
+  EDynaProcessEvent,
+  IDynaProcessConfig,
+} from "./DynaProcess";
+import { IError } from "./interfaces";
 
 export interface IDynaProcessManagerConfig {
   loggerSettings?: IDynaLoggerConfig;
 }
 
-export {IDynaLoggerConfig};
+export { IDynaLoggerConfig };
 
 export class DynaProcessManager {
   constructor(private readonly _config: IDynaProcessManagerConfig = {}) {
@@ -17,10 +24,9 @@ export class DynaProcessManager {
         ...(this._config.loggerSettings || {}),
       },
     };
-    this._logger = new DynaLogger(this._config.loggerSettings);
+    new DynaLogger(this._config.loggerSettings);
   }
 
-  private _logger: DynaLogger;
   private _processes: { [id: string]: DynaProcess } = {};
 
   public addProcess(processSetup: IDynaProcessConfig): DynaProcess {
@@ -30,16 +36,16 @@ export class DynaProcessManager {
     return newProcess;
   }
 
-  public removeProcess(processId: string): Promise<void> {
+  public removeProcess(id: string): Promise<void> {
     return new Promise((resolve: Function, reject: (error: IError) => void) => {
-      const process: DynaProcess = this.getProcess(processId);
+      const process: DynaProcess = this.getProcess(id);
 
       if (!process) {
         reject({
           section: 'ProcessManager/removeProcess',
           code: 3598644,
           message: 'Process not found with this id',
-          data: {processId},
+          data: {id},
         });
         return;
       }
@@ -49,34 +55,34 @@ export class DynaProcessManager {
           section: 'ProcessManager/removeProcess',
           code: 3598645,
           message: 'Process is working',
-          data: {processId},
+          data: {id},
         });
         return;
       }
 
-      delete this._processes[processId];
+      delete this._processes[id];
       resolve();
     });
   }
 
-  public getProcess(processId: string): DynaProcess {
-    return this._processes[processId];
+  public getProcess(id: string): DynaProcess {
+    return this._processes[id];
   }
 
   public get count(): number {
     return Object.keys(this._processes).length;
   }
 
-  public stop(processId: string): Promise<any> {
+  public stop(id: string): Promise<any> {
     return new Promise((resolve: Function, reject: (error: IError) => void) => {
-      const process: DynaProcess = this.getProcess(processId);
+      const process: DynaProcess = this.getProcess(id);
 
       if (!process) {
         reject({
           section: 'ProcessManager/stop',
           code: 3598643,
           message: 'Process not found with this id',
-          data: {processId},
+          data: {id},
         });
         return; // exit
       }
@@ -108,7 +114,7 @@ export class DynaProcessManager {
   public stopAll(): Promise<void> {
     return Promise.all(
       Object.keys(this._processes)
-        .map((processId: string) => this.stop(processId))
+        .map((id: string) => this.stop(id)),
     ).then(() => undefined);
   }
 }

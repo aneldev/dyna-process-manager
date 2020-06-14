@@ -27,27 +27,33 @@ interface IDynaProcessConfigGuard {
 
 ```
 
-## public removeProcess(processId: string): Promise<void>
+`addProcess` returns the insatnce of the `DynaProcess` where this has the `id` property (string). Use this `id` in the below methods. 
 
-## public getProcess(processId: string): DynaProcess
+## public removeProcess(id: string): Promise<void>
+
+## public getProcess(id: string): DynaProcess
 
 ## public get count(): number
 
 ## public stopAll(): Promise<void>
 
-# DynaProcessManager
+# DynaProcess
 
 You don't instantiate this, this is the result of the `addProcess`.
 
 You get this from `getProcess` by its `id`.
 
-## public logger: DynaLogger
+## logger: DynaLogger
 
-## public id: string
+## get id(): string
 
 ## public active: boolean
 
-## public start(): Promise<boolean>
+## get info()
+
+Returns startAt, stoppedAt and stopCalled
+
+## start(): Promise<boolean>
 
 Returns true if started and false if it was already started.
 
@@ -55,7 +61,7 @@ The process is started automatically on `addProcess`.
 
 You can use this if you to re-start it later.
 
-## public stop(signal?: string): void
+## stop(signal?: string): void
 
 # Pass object to new instances
 
