@@ -11,13 +11,14 @@ interface IDynaProcessManagerConfig {
 
 ```
 interface IDynaProcessConfig {
-  name: string;               // name this process for console messages and stats
+  name: string;               // The name if this process for console messages and stats
   cwd: string;                // Current working directory of the child process
-  command: string;            // full executable filename
-  args?: string | string[];   // arguments
+  command: string;            // Full executable filename
+  args?: string | string[];   // Arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
   loggerSettings?: IDynaLoggerSettings;
+  consolePrefixProcessName?: boolean; // default: true
   onClose?: (exitCode: number, signal: string) => void;
 }
 

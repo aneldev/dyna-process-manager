@@ -15,13 +15,14 @@ import { IError } from "./interfaces";
 const EOL: string = require('os').EOL;
 
 export interface IDynaProcessConfig {
-  name: string;               // name this process for console messages and stats
+  name: string;               // The name if this process for console messages and stats
   cwd: string;                // Current working directory of the child process
-  command: string | null;     // full executable filename
-  args?: string | string[];   // arguments
+  command: string;            // Full executable filename
+  args?: string | string[];   // Arguments
   env?: any;                  // Environment key-value pairs
   guard?: IDynaProcessConfigGuard;
   loggerSettings?: IDynaLoggerConfig;
+  consolePrefixProcessName?: boolean; // default: true
   onClose?: (exitCode: number, signal: string) => void;
 }
 
@@ -42,6 +43,7 @@ export class DynaProcess extends EventEmitter {
 
     this._config = {
       env: {},
+      consolePrefixProcessName: true,
       ...(this._config),
       loggerSettings: {
         bufferLimit: 2000,
@@ -52,8 +54,11 @@ export class DynaProcess extends EventEmitter {
     this.logger = new DynaLogger(this._config.loggerSettings);
 
     if (this._config.command === "node") {
-      this._config.command = which.sync('node', {nothrow: true});
-      if (!this._config.command) {
+      const resolvedNodeCommand = which.sync('node', {nothrow: true});
+      if (resolvedNodeCommand) {
+        this._config.command = resolvedNodeCommand;
+      }
+      else {
         console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
       }
     }
@@ -247,19 +252,24 @@ export class DynaProcess extends EventEmitter {
     return value >= from && value <= to;
   }
 
+  private get consolePrefix(): string {
+    if (!this._config.consolePrefixProcessName) return 'Process: ';
+    return `Process: ${this._config.name}:`;
+  }
+
   private _consoleLog(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.log(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
   private _consoleWarn(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.warn(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.warn(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
   private _consoleError(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.error(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.error(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
   }
 
   private static cleanProcessConsole(text: any): string {
