@@ -4,11 +4,12 @@ import { DynaLogger, IDynaLoggerConfig } from "dyna-logger";
 export interface IDynaProcessConfig {
     name: string;
     cwd: string;
-    command: string | null;
+    command: string;
     args?: string | string[];
     env?: any;
     guard?: IDynaProcessConfigGuard;
     loggerSettings?: IDynaLoggerConfig;
+    consolePrefixProcessName?: boolean;
     onClose?: (exitCode: number, signal: string) => void;
 }
 export interface IDynaProcessConfigGuard {
@@ -32,8 +33,13 @@ export declare class DynaProcess extends EventEmitter {
     logger: DynaLogger;
     readonly id: string;
     readonly active: boolean;
+    readonly info: {
+        startedAt: Date | null;
+        stoppedAt: Date | null;
+        stopCalled: boolean;
+    };
     start(): Promise<boolean>;
-    _start(): Promise<boolean>;
+    private _start;
     stop(signal?: string): void;
     private _handleOnConsoleLog;
     private _handleOnConsoleError;
@@ -42,6 +48,7 @@ export declare class DynaProcess extends EventEmitter {
     private _isErrorWarning;
     private _isTextWarning;
     private _inRange;
+    private readonly consolePrefix;
     private _consoleLog;
     private _consoleWarn;
     private _consoleError;

@@ -7,12 +7,11 @@ export { IDynaLoggerConfig };
 export declare class DynaProcessManager {
     private readonly _config;
     constructor(_config?: IDynaProcessManagerConfig);
-    private _logger;
     private _processes;
     addProcess(processSetup: IDynaProcessConfig): DynaProcess;
-    removeProcess(processId: string): Promise<void>;
-    getProcess(processId: string): DynaProcess;
+    removeProcess(id: string): Promise<void>;
+    getProcess(id: string): DynaProcess;
     readonly count: number;
-    stop(processId: string): Promise<any>;
+    stop(id: string): Promise<any>;
     stopAll(): Promise<void>;
 }

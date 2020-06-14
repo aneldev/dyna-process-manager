@@ -9,15 +9,15 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-import { DynaLogger } from "dyna-logger";
-import { DynaProcess, EDynaProcessEvent } from "./DynaProcess";
+import { DynaLogger, } from "dyna-logger";
+import { DynaProcess, EDynaProcessEvent, } from "./DynaProcess";
 var DynaProcessManager = /** @class */ (function () {
     function DynaProcessManager(_config) {
         if (_config === void 0) { _config = {}; }
         this._config = _config;
         this._processes = {};
         this._config = __assign({}, this._config, { loggerSettings: __assign({ bufferLimit: 2000 }, (this._config.loggerSettings || {})) });
-        this._logger = new DynaLogger(this._config.loggerSettings);
+        new DynaLogger(this._config.loggerSettings);
     }
     DynaProcessManager.prototype.addProcess = function (processSetup) {
         if (!processSetup.loggerSettings)
@@ -26,16 +26,16 @@ var DynaProcessManager = /** @class */ (function () {
         this._processes[newProcess.id] = newProcess;
         return newProcess;
     };
-    DynaProcessManager.prototype.removeProcess = function (processId) {
+    DynaProcessManager.prototype.removeProcess = function (id) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var process = _this.getProcess(processId);
+            var process = _this.getProcess(id);
             if (!process) {
                 reject({
                     section: 'ProcessManager/removeProcess',
                     code: 3598644,
                     message: 'Process not found with this id',
-                    data: { processId: processId },
+                    data: { id: id },
                 });
                 return;
             }
@@ -44,16 +44,16 @@ var DynaProcessManager = /** @class */ (function () {
                     section: 'ProcessManager/removeProcess',
                     code: 3598645,
                     message: 'Process is working',
-                    data: { processId: processId },
+                    data: { id: id },
                 });
                 return;
             }
-            delete _this._processes[processId];
+            delete _this._processes[id];
             resolve();
         });
     };
-    DynaProcessManager.prototype.getProcess = function (processId) {
-        return this._processes[processId];
+    DynaProcessManager.prototype.getProcess = function (id) {
+        return this._processes[id];
     };
     Object.defineProperty(DynaProcessManager.prototype, "count", {
         get: function () {
@@ -62,16 +62,16 @@ var DynaProcessManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    DynaProcessManager.prototype.stop = function (processId) {
+    DynaProcessManager.prototype.stop = function (id) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            var process = _this.getProcess(processId);
+            var process = _this.getProcess(id);
             if (!process) {
                 reject({
                     section: 'ProcessManager/stop',
                     code: 3598643,
                     message: 'Process not found with this id',
-                    data: { processId: processId },
+                    data: { id: id },
                 });
                 return; // exit
             }
@@ -97,7 +97,7 @@ var DynaProcessManager = /** @class */ (function () {
     DynaProcessManager.prototype.stopAll = function () {
         var _this = this;
         return Promise.all(Object.keys(this._processes)
-            .map(function (processId) { return _this.stop(processId); })).then(function () { return undefined; });
+            .map(function (id) { return _this.stop(id); })).then(function () { return undefined; });
     };
     return DynaProcessManager;
 }());

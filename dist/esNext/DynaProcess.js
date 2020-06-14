@@ -27,7 +27,7 @@ import * as cp from "child_process";
 import * as which from "which";
 import { guid } from "dyna-guid";
 import { EventEmitter } from "events";
-import { DynaLogger } from "dyna-logger";
+import { DynaLogger, } from "dyna-logger";
 var EOL = require('os').EOL;
 export var EDynaProcessEvent;
 (function (EDynaProcessEvent) {
@@ -46,14 +46,37 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
-        _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
+        _this._config = __assign({ env: {}, consolePrefixProcessName: true }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
-            _this._config.command = which.sync('node', { nothrow: true });
-            if (!_this._config.command) {
+            var resolvedNodeCommand = which.sync('node', { nothrow: true });
+            if (resolvedNodeCommand) {
+                _this._config.command = resolvedNodeCommand;
+            }
+            else {
                 console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
             }
         }
+        // For all termination signals, push the to the child.
+        // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
+        // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
+        var terminationSignals = [
+            "SIGTERM",
+            "SIGINT",
+            "SIGQUIT",
+            "SIGHUP",
+        ];
+        (new Array())
+            .concat(terminationSignals, terminationSignals.map(function (s) { return s.toLowerCase(); }))
+            .forEach(function (signal) {
+            process.on(signal, function () {
+                console.debug('Passing termination signal', signal);
+                if (!_this._active)
+                    return;
+                _this.stop(signal);
+                process.exit(0);
+            });
+        });
         return _this;
     }
     Object.defineProperty(DynaProcess.prototype, "id", {
@@ -66,6 +89,17 @@ var DynaProcess = /** @class */ (function (_super) {
     Object.defineProperty(DynaProcess.prototype, "active", {
         get: function () {
             return this._active;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DynaProcess.prototype, "info", {
+        get: function () {
+            return {
+                startedAt: this._startedAt,
+                stoppedAt: this._stoppedAt,
+                stopCalled: this._stopCalled,
+            };
         },
         enumerable: true,
         configurable: true
@@ -96,7 +130,7 @@ var DynaProcess = /** @class */ (function (_super) {
             try {
                 _this._process = cp.spawn(command, applyArgs, {
                     cwd: cwd,
-                    env: env
+                    env: env,
                 });
                 _this._active = true;
                 _this._process.stdout.on('data', function (text) { return _this._handleOnConsoleLog(text); });
@@ -189,23 +223,32 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._inRange = function (value, from, to) {
         return value >= from && value <= to;
     };
+    Object.defineProperty(DynaProcess.prototype, "consolePrefix", {
+        get: function () {
+            if (!this._config.consolePrefixProcessName)
+                return 'Process: ';
+            return "Process: " + this._config.name + ":";
+        },
+        enumerable: true,
+        configurable: true
+    });
     DynaProcess.prototype._consoleLog = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.log("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.log(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.prototype._consoleWarn = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.warn("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.warn(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.prototype._consoleError = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.error("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.error(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.cleanProcessConsole = function (text) {
         text = text.toString();

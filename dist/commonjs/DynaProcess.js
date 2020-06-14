@@ -48,11 +48,14 @@ var DynaProcess = /** @class */ (function (_super) {
         _this._startedAt = null;
         _this._stoppedAt = null;
         _this._stopCalled = false;
-        _this._config = __assign({ env: {} }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
+        _this._config = __assign({ env: {}, consolePrefixProcessName: true }, (_this._config), { loggerSettings: __assign({ bufferLimit: 2000 }, _this._config.loggerSettings) });
         _this.logger = new dyna_logger_1.DynaLogger(_this._config.loggerSettings);
         if (_this._config.command === "node") {
-            _this._config.command = which.sync('node', { nothrow: true });
-            if (!_this._config.command) {
+            var resolvedNodeCommand = which.sync('node', { nothrow: true });
+            if (resolvedNodeCommand) {
+                _this._config.command = resolvedNodeCommand;
+            }
+            else {
                 console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
             }
         }
@@ -92,6 +95,17 @@ var DynaProcess = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(DynaProcess.prototype, "info", {
+        get: function () {
+            return {
+                startedAt: this._startedAt,
+                stoppedAt: this._stoppedAt,
+                stopCalled: this._stopCalled,
+            };
+        },
+        enumerable: true,
+        configurable: true
+    });
     // returns true if started and false if it was already started; rejects on errors
     DynaProcess.prototype.start = function () {
         this._stopCalled = false;
@@ -118,7 +132,7 @@ var DynaProcess = /** @class */ (function (_super) {
             try {
                 _this._process = cp.spawn(command, applyArgs, {
                     cwd: cwd,
-                    env: env
+                    env: env,
                 });
                 _this._active = true;
                 _this._process.stdout.on('data', function (text) { return _this._handleOnConsoleLog(text); });
@@ -211,23 +225,32 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._inRange = function (value, from, to) {
         return value >= from && value <= to;
     };
+    Object.defineProperty(DynaProcess.prototype, "consolePrefix", {
+        get: function () {
+            if (!this._config.consolePrefixProcessName)
+                return 'Process: ';
+            return "Process: " + this._config.name + ":";
+        },
+        enumerable: true,
+        configurable: true
+    });
     DynaProcess.prototype._consoleLog = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.log("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.log(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.prototype._consoleWarn = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.warn("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.warn(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.prototype._consoleError = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.error("Process: " + this._config.name, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.error(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
     };
     DynaProcess.cleanProcessConsole = function (text) {
         text = text.toString();
