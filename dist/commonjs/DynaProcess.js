@@ -59,13 +59,14 @@ var DynaProcess = /** @class */ (function (_super) {
         // For all termination signals, push the to the child.
         // On some system's like Mac OS Catalina update, the children don't get the termination signal always.
         // https://www.gnu.org/software/libc/manual/html_node/Termination-Signals.html#:~:text=The%20(obvious)%20default%20action%20for,cause%20the%20process%20to%20terminate.&text=The%20SIGTERM%20signal%20is%20a,ask%20a%20program%20to%20terminate.
-        [
+        var terminationSignals = [
             "SIGTERM",
             "SIGINT",
             "SIGQUIT",
-            // "SIGKILL",
             "SIGHUP",
-        ]
+        ];
+        (new Array())
+            .concat(terminationSignals, terminationSignals.map(function (s) { return s.toLowerCase(); }))
             .forEach(function (signal) {
             process.on(signal, function () {
                 console.debug('Passing termination signal', signal);

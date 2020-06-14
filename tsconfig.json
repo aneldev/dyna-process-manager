@@ -29,6 +29,8 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "types": [
       "node"
     ]
@@ -38,7 +40,8 @@
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.test.ts"
   ],
   "compileOnSave": false
 }
