@@ -35,7 +35,7 @@ describe('Dyna process manager - simple test with success termination', () => {
         let myProcess = pm.addProcess({
           name: 'process test 1',
           command: 'node',
-          args: 'ProcessSampleExit.js ProcessTest1 1 2000'.split(' '),
+          args: 'ProcessSampleJSError.js --name ProcessTest1 --crashAfter 2000'.split(' '),
           cwd: './tests/scripts',
         });
         myProcesses.push(myProcess);

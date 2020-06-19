@@ -1,3 +1,3 @@
 import "../dyna/mock-jest";
 
-import "./scripts/guard.test";
+import "./scripts/guard-with-throw.test";

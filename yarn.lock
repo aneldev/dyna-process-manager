@@ -2901,6 +2901,11 @@ dyna-logger@^5.0.0:
   dependencies:
     dyna-universal "^2.0.0"
 
+dyna-node-arguments@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/dyna-node-arguments/-/dyna-node-arguments-1.0.3.tgz#9c61bd126beed2e6a6e55e13d51424bb3187406e"
+  integrity sha512-4uOFlm7Nvk/X5oSPlW2SHfjPnibEYeSeuvLgUtdFqLjq+YlfqDoV6DbVsNN3Ax6PRE+mBXBcQPYJPkxSn+hfAQ==
+
 dyna-node-console@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/dyna-node-console/-/dyna-node-console-1.0.7.tgz#948adbe8f907fa09f9897353d0522a992926d78e"
