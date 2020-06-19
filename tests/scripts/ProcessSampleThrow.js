@@ -1,5 +1,5 @@
 const name = process.argv[2];
-const terminateAfter = Number(process.argv[3]);
+const crashAfter = Number(process.argv[3]);
 
 console.log('Process Sample started (throw)');
 if (process.argv.length < 4) {
@@ -10,9 +10,9 @@ if (process.argv.length < 4) {
 }
 
 console.log('  :::Name:::', name);
-console.log('  This process will terminate with exception in', terminateAfter, 'ms');
+console.log('  This process will terminate with exception in', crashAfter, 'ms');
 
 setTimeout(function () {
-  console.log('  Terminating...');
+  console.log('  Crashing...');
   throw new Error('CustomError');
-}, terminateAfter);
+}, crashAfter);

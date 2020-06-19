@@ -1,36 +1,36 @@
 import "jest"
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 8000;
 
 import {DynaProcessManager, EDynaProcessEvent, DynaProcess} from '../../src';
 import {IError}                                             from "../../src/interfaces";
 
-const pm: DynaProcessManager = new DynaProcessManager({
-  loggerSettings: {
-    consoleLogs: false,
-    consoleErrorLogs: false,
-  },
-});
-
 describe('Dyna process manager - should restart the failed process and stop it on demand', () => {
+  const pm: DynaProcessManager = new DynaProcessManager();
   let myProcess: DynaProcess;
-  let crashTimeout: number = 1000;
+  const timeout: number = 2000;
   let stopped: boolean = false;
   let crashed: boolean = false;
+
+  afterAll(async (done) => {
+    await pm.stopAll();
+    done();
+  });
 
   it('should create the process', () => {
     myProcess = pm.addProcess({
       name: 'process test',
       command: 'node',
-      args: `ProcessSampleThrow.js ProcessTestForCrash ${crashTimeout}`.split(' '),
+      args: `ProcessSampleThrow.js ProcessTestForCrash ${timeout}`.split(' '),
       cwd: './tests/scripts',
       guard: {
-        restartAfterMs: 50,
+        restartAfterMs: timeout,
       },
     });
     myProcess.on(EDynaProcessEvent.STOP, () => stopped = true);
     myProcess.on(EDynaProcessEvent.CRASH, () => crashed = true);
     expect(myProcess).not.toBe(undefined);
   });
+
 
   it('should start myProcess', (done: Function) => {
     myProcess.start()
@@ -48,17 +48,25 @@ describe('Dyna process manager - should restart the failed process and stop it o
     setTimeout(() => {
       expect(myProcess.active).toBe(true);
       done();
-    }, crashTimeout * 0.5);
+    }, timeout * 0.5);
   });
 
+  it('myProcess should be crashed and not be active, is not yet restarted by the guard', (done: Function) => {
+    setTimeout(() => {
+      expect(myProcess.active).toBe(false);
+      expect(stopped).toBe(false);
+      expect(crashed).toBe(true);
+      done();
+    }, timeout * 1);
+  });
 
-  it('myProcess should still work because is restarted by the guard', (done: Function) => {
+  it('myProcess should still work again since is restarted by the guard', (done: Function) => {
     setTimeout(() => {
       expect(myProcess.active).toBe(true);
       expect(stopped).toBe(false);
       expect(crashed).toBe(true);
       done();
-    }, crashTimeout * 1);
+    }, timeout * 1);
   });
 
   it('should stop the process', (done: Function) => {
