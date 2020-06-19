@@ -5,7 +5,12 @@ import {DynaProcessManager, EDynaProcessEvent, DynaProcess} from '../../src';
 import {IError}                                             from "../../src/interfaces";
 
 describe('Dyna process manager - should restart the failed process and stop it on demand', () => {
-  const pm: DynaProcessManager = new DynaProcessManager();
+  const pm: DynaProcessManager = new DynaProcessManager({
+    loggerSettings: {
+      consoleLogs: false,
+      consoleErrorLogs: true,
+    },
+  });
   let myProcess: DynaProcess;
   const timeout: number = 2000;
   let stopped: boolean = false;
