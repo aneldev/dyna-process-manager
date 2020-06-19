@@ -182,19 +182,19 @@ var DynaProcess = /** @class */ (function (_super) {
     DynaProcess.prototype._handleOnClose = function (exitCode, signal) {
         var _this = this;
         if (!this._active)
-            return; // is already exited
+            return; // is already closed
         var _a = this._config, guard = _a.guard, onClose = _a.onClose;
         // help: https://nodejs.org/api/child_process.html#child_process_event_close
         this._active = false;
         this._stoppedAt = new Date;
         if (exitCode) {
-            this._consoleError("Crashed! Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
+            this._consoleError("Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
             this.emit(EDynaProcessEvent.CRASH, { exitCode: exitCode });
             if (guard) {
                 if (!this._stopCalled) {
                     setTimeout(function () {
                         _this._start();
-                    }, guard.restartAfterMs || 0);
+                    }, guard.restartAfterMs);
                 }
                 else {
                     this.emit(EDynaProcessEvent.STOP);
