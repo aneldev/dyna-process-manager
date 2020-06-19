@@ -1,41 +1,46 @@
 import "jest";
-jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout;
+import { count } from "dyna-count";
 
-const STRESS_TEST: boolean = false;
-const ITEM_TIMEOUT_MS: number = 40;
-const NORMAL_ITEMS_COUNT: number = 2;
-const STRESS_ITEMS_COUNT: number = 200;
+const PROCESSES_COUNT: number = 1;
 
-const ITEMS_COUNT: number = STRESS_TEST && STRESS_ITEMS_COUNT || NORMAL_ITEMS_COUNT;
-let timeout = (STRESS_TEST && STRESS_ITEMS_COUNT || NORMAL_ITEMS_COUNT) * ITEM_TIMEOUT_MS;
-if (timeout < 3000) timeout = 3000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
-console.log('Test info: items:', ITEMS_COUNT, 'timeout:', timeout);
+console.log('Test info: items:', PROCESSES_COUNT, 'timeout:', jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
-import {DynaProcessManager, DynaProcess} from '../../src';
-import {IError} from "../../src/interfaces";
+import { DynaProcessManager, DynaProcess } from '../../src';
+import { IError } from "../../src/interfaces";
 
-const pm: DynaProcessManager = new DynaProcessManager({
-  loggerSettings: {
-    consoleLogs: false,
-    consoleErrorLogs: false,
-  },
-});
 
 describe('Dyna process manager - simple test with success termination', () => {
+  let pm: DynaProcessManager
   let myProcesses: DynaProcess[] = [];
 
-  it('should create the process', () => {
-    Array(ITEMS_COUNT).fill(null).forEach(() => {
-      let myProcess = pm.addProcess({
-        name: 'process test 1',
-        command: 'node',
-        args: 'ProcessSampleExit.js ProcessTest1 0 2000'.split(' '),
-        cwd: './tests/scripts',
-      });
-      myProcesses.push(myProcess);
-      expect(myProcess).not.toBe(undefined);
+  beforeAll(() => {
+    pm = new DynaProcessManager({
+      loggerSettings: {
+        consoleLogs: false,
+        consoleErrorLogs: false,
+      },
     });
+  });
+
+  afterAll(async (done) => {
+    await pm.stopAll()
+    done();
+  });
+
+  it(`should create ${PROCESSES_COUNT} the processes`, () => {
+    count(PROCESSES_COUNT)
+      .for(() => {
+        let myProcess = pm.addProcess({
+          name: 'process test 1',
+          command: 'node',
+          args: 'ProcessSampleExit.js ProcessTest1 1 2000'.split(' '),
+          cwd: './tests/scripts',
+        });
+        myProcesses.push(myProcess);
+        expect(myProcess).not.toBe(undefined);
+      });
   });
 
   it('should start myProcess', (done: Function) => {
@@ -46,7 +51,7 @@ describe('Dyna process manager - simple test with success termination', () => {
           expect(isStarted).toBe(true);
           expect(myProcess.active).toBe(true);
           started++;
-          if (started === ITEMS_COUNT) done();
+          if (started === PROCESSES_COUNT) done();
         })
         .catch((error: IError) => {
           expect(error).toBe(null);
@@ -55,8 +60,8 @@ describe('Dyna process manager - simple test with success termination', () => {
     });
   });
 
-  it('should have active processes', () => {
-    expect(pm.count).toBe(ITEMS_COUNT);
+  it('should have processes', () => {
+    expect(pm.count).toBe(PROCESSES_COUNT);
   });
 
   it('processes should still work', (done: Function) => {
@@ -66,7 +71,6 @@ describe('Dyna process manager - simple test with success termination', () => {
       });
       done();
     }, 1000);
-    //}, 500 + (ITEMS_COUNT * 5));
   });
 
   it('my processed should not work anymore', (done: Function) => {
@@ -75,11 +79,11 @@ describe('Dyna process manager - simple test with success termination', () => {
         expect(myProcess.active).toBe(false);
       });
       done();
-    }, timeout * 0.9);
+    }, jasmine.DEFAULT_TIMEOUT_INTERVAL * 0.9);
   });
 
-  it('should have active processes', () => {
-    expect(pm.count).toBe(ITEMS_COUNT);
+  it('should have processes', () => {
+    expect(pm.count).toBe(PROCESSES_COUNT);
   });
 
   it('should remove them all', () => {

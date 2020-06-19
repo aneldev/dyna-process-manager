@@ -70,6 +70,7 @@
     "babel-loader": "^8.0.4",
     "chokidar": "^1.7.0",
     "circular-dependency-plugin": "^4.0.0",
+    "dyna-count": "^1.0.3",
     "dyna-node-console": "^1.0.7",
     "enzyme": "^3.7.0",
     "enzyme-to-json": "^3.3.4",

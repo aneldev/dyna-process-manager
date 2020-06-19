@@ -2884,6 +2884,11 @@ duplexify@^3.4.2, duplexify@^3.6.0:
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
 
+dyna-count@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/dyna-count/-/dyna-count-1.0.3.tgz#4f94e0afcfdb7a6d9b5d3c42a9115c611dc9b632"
+  integrity sha512-E6Dn4VFlC8nhr0QZpIOr2vLxtUHAvs1sEALLNGvO8VpnWTnQV5AIQo7gbJCHOR0nRSHEFvoixRQceKl/pfSfJQ==
+
 dyna-guid@^1.0.2:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/dyna-guid/-/dyna-guid-1.0.10.tgz#0aab519f22ef399ef43aed44f9bf905d609b4bc8"
