@@ -1,6 +1,6 @@
 {
   "name": "dyna-process-manager",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Process manager for node.js",
   "repository": {
     "type": "git",
@@ -68,8 +68,8 @@
     "babel-loader": "^8.0.4",
     "chokidar": "^3.4.0",
     "circular-dependency-plugin": "^4.0.0",
-    "dyna-guid": "^1.0.10",
     "dyna-count": "^1.0.3",
+    "dyna-guid": "^1.0.10",
     "dyna-node-arguments": "^1.0.3",
     "dyna-node-console": "^1.0.7",
     "dyna-node-fs": "^1.0.4",
