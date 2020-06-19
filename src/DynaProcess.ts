@@ -159,7 +159,7 @@ export class DynaProcess extends EventEmitter {
   }
 
   private _handleOnClose(exitCode: number, signal: string): void {
-    if (!this._active) return; // is already exited
+    if (!this._active) return; // is already closed
     const {guard, onClose} = this._config;
 
     // help: https://nodejs.org/api/child_process.html#child_process_event_close
@@ -168,13 +168,13 @@ export class DynaProcess extends EventEmitter {
     this._stoppedAt = new Date;
 
     if (exitCode) {
-      this._consoleError(`Crashed! Exited with exit code [${exitCode}] and signal [${signal}]`);
+      this._consoleError(`Exited with exit code [${exitCode}] and signal [${signal}]`);
       this.emit(EDynaProcessEvent.CRASH, {exitCode});
       if (guard) {
         if (!this._stopCalled) {
           setTimeout(() => {
             this._start();
-          }, guard.restartAfterMs || 0);
+          }, guard.restartAfterMs);
         }
         else {
           this.emit(EDynaProcessEvent.STOP);
