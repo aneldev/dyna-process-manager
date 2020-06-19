@@ -2,11 +2,11 @@
 import * as cp from "child_process";
 import * as which from "which";
 
-import {guid} from "dyna-guid";
-import {EventEmitter} from "events";
-import {DynaLogger, IDynaLoggerConfig} from "dyna-logger";
+import { guid } from "dyna-guid";
+import { EventEmitter } from "events";
+import { DynaLogger, IDynaLoggerConfig } from "dyna-logger";
 
-import {IError} from "./interfaces";
+import { IError } from "./interfaces";
 
 const EOL: string = require('os').EOL;
 
@@ -48,7 +48,7 @@ export class DynaProcess extends EventEmitter {
     this.logger = new DynaLogger(this._config.loggerSettings);
 
     if (this._config.command === "node") {
-      this._config.command = which.sync('node', {nothrow: true});
+      this._config.command = which.sync('node', { nothrow: true });
       if (!this._config.command) {
         console.error('DynaProcessManager.DynaProcess cannot locate the node in current instance. "which node" returned null. This leads to 1902250950 error');
       }
@@ -58,8 +58,8 @@ export class DynaProcess extends EventEmitter {
   private _id: string = guid(1);
   private _active: boolean = false;
   private _process: cp.ChildProcess;
-  private _startedAt: Date | null= null;
-  private _stoppedAt: Date | null= null;
+  private _startedAt: Date | null = null;
+  private _stoppedAt: Date | null = null;
   private _stopCalled: boolean = false;
 
   public logger: DynaLogger;
@@ -80,7 +80,7 @@ export class DynaProcess extends EventEmitter {
 
   public _start(): Promise<boolean> {
     return new Promise((resolve: (started: boolean) => void, reject: (error: IError) => void) => {
-      const {command, args, cwd, env} = this._config;
+      const { command, args, cwd, env } = this._config;
       let applyArgs: string[] =
         Array.isArray(args)
           ? args
@@ -92,7 +92,7 @@ export class DynaProcess extends EventEmitter {
           code: 1902250950,
           section: 'DynaProcess/start',
           message: 'Process cannot start while command is not defined',
-          data: {command},
+          data: { command },
         } as IError);
         return;
       }
@@ -118,14 +118,13 @@ export class DynaProcess extends EventEmitter {
         this._startedAt = new Date();
         this._stoppedAt = null;
         resolve(true);
-      }
-      catch (error) {
+      } catch (error) {
         this._active = false;
         reject({
           section: 'DynaProcess/start',
           message: 'Process cannot start',
           error,
-          data: {processSetup: this._config},
+          data: { processSetup: this._config },
         } as IError)
       }
     });
@@ -136,8 +135,7 @@ export class DynaProcess extends EventEmitter {
     this._stopCalled = true;
     try {
       this._process.kill(signal);
-    }
-    catch (error) {
+    } catch (error) {
       this.emit(EDynaProcessEvent.CRASH, error);
     }
   }
@@ -160,7 +158,7 @@ export class DynaProcess extends EventEmitter {
 
   private _handleOnClose(exitCode: number, signal: string): void {
     if (!this._active) return; // is already closed
-    const {guard, onClose} = this._config;
+    const { guard, onClose } = this._config;
 
     // help: https://nodejs.org/api/child_process.html#child_process_event_close
 
@@ -169,7 +167,7 @@ export class DynaProcess extends EventEmitter {
 
     if (exitCode) {
       this._consoleError(`Exited with exit code [${exitCode}] and signal [${signal}]`);
-      this.emit(EDynaProcessEvent.CRASH, {exitCode});
+      this.emit(EDynaProcessEvent.CRASH, { exitCode });
       if (guard) {
         if (!this._stopCalled) {
           setTimeout(() => {
@@ -191,9 +189,9 @@ export class DynaProcess extends EventEmitter {
 
   private _handleProcessError(error: Error): void {
     if (this._isErrorWarning(error))
-      this._consoleWarn(`warning: ${error.message}`, false, {warn: error, pid: this._process.pid});
+      this._consoleWarn(`warning: ${error.message}`, false, { warn: error, pid: this._process.pid });
     else
-      this._consoleError(`error: ${error.message}`, false, {error, pid: this._process.pid});
+      this._consoleError(`error: ${error.message}`, false, { error, pid: this._process.pid });
   }
 
   private _isErrorWarning(error: Error): boolean {
@@ -214,17 +212,17 @@ export class DynaProcess extends EventEmitter {
 
   private _consoleLog(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id})
+    this.logger.log(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, { ...data, dynaProgressId: this.id })
   }
 
   private _consoleWarn(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.warn(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.warn(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, { ...data, dynaProgressId: this.id });
   }
 
   private _consoleError(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.error(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.error(`Process: ${this._config.name}`, `${processSays ? '> ' : ''}${message}`, { ...data, dynaProgressId: this.id });
   }
 
   private static cleanProcessConsole(text: any): string {

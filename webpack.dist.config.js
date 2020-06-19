@@ -12,9 +12,7 @@ const plugins = require('./webpack.plugins');
 const config = {
   mode: "development",  // do not minify the code, this part of the app, not of the module
   target: 'web',        // help: https://webpack.github.io/docs/configuration.html#target
-  entry: {
-    index: './src/index.ts',
-  },
+  entry: './src/index.ts',
   externals: [nodeExternals()].concat(['fs', 'path']), // in order to ignore all modules in node_modules folder
   optimization: {
     usedExports: true,       // true to remove the dead code, for more https://webpack.js.org/guides/tree-shaking/
