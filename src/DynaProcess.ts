@@ -175,7 +175,7 @@ export class DynaProcess extends EventEmitter {
     });
   }
 
-  public stop(signal?: string): void {
+  public stop(signal: string = 'SIGTERM'): void {
     // help: https://nodejs.org/api/child_process.html#child_process_subprocess_kill_signal
     this._stopCalled = true;
     try {
@@ -209,6 +209,8 @@ export class DynaProcess extends EventEmitter {
 
     this._active = false;
     this._stoppedAt = new Date;
+
+    console.debug('_handleOnClose', exitCode, signal);
 
     if (exitCode) {
       this._consoleError(`Exited with exit code [${exitCode}] and signal [${signal}]`);
