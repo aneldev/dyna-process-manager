@@ -205,6 +205,9 @@ var DynaProcess = /** @class */ (function (_super) {
                     onClose && onClose(exitCode, signal);
                 }
             }
+            else {
+                onClose && onClose(exitCode, signal);
+            }
         }
         else {
             this._consoleLog("Stopped. Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
