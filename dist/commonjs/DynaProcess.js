@@ -190,7 +190,6 @@ var DynaProcess = /** @class */ (function (_super) {
         // help: https://nodejs.org/api/child_process.html#child_process_event_close
         this._active = false;
         this._stoppedAt = new Date;
-        console.debug('_handleOnClose', exitCode, signal);
         if (exitCode) {
             this._consoleError("Exited with exit code [" + exitCode + "] and signal [" + signal + "]");
             this.emit(EDynaProcessEvent.CRASH, { exitCode: exitCode });
