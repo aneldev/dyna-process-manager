@@ -73,7 +73,6 @@ var DynaProcess = /** @class */ (function (_super) {
                 .concat(terminationSignals, terminationSignals.map(function (s) { return s.toLowerCase(); }))
                 .forEach(function (signal) {
                 process.on(signal, function () {
-                    console.debug('Passing termination signal', signal);
                     if (!_this._active)
                         return;
                     _this.stop(signal);
