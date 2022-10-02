@@ -83,7 +83,6 @@ export class DynaProcess extends EventEmitter {
         )
         .forEach(signal => {
           process.on(signal as Signals, () => {
-            console.debug('Passing termination signal', signal);
             if (!this._active) return;
             this.stop(signal);
             process.exit(0);
