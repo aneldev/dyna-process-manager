@@ -264,17 +264,17 @@ export class DynaProcess extends EventEmitter {
 
   private _consoleLog(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.log(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.log(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProcessId: this.id});
   }
 
   private _consoleWarn(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.warn(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.warn(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProcessId: this.id});
   }
 
   private _consoleError(message: string, processSays: boolean = false, data: any = {}): void {
     message = DynaProcess.cleanProcessConsole(message);
-    this.logger.error(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProgressId: this.id});
+    this.logger.error(this.consolePrefix, `${processSays ? '> ' : ''}${message}`, {...data, dynaProcessId: this.id});
   }
 
   private static cleanProcessConsole(text: any): string {
