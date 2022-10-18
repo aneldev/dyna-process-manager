@@ -243,19 +243,19 @@ var DynaProcess = /** @class */ (function (_super) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.log(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.log(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProcessId: this.id }));
     };
     DynaProcess.prototype._consoleWarn = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.warn(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.warn(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProcessId: this.id }));
     };
     DynaProcess.prototype._consoleError = function (message, processSays, data) {
         if (processSays === void 0) { processSays = false; }
         if (data === void 0) { data = {}; }
         message = DynaProcess.cleanProcessConsole(message);
-        this.logger.error(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProgressId: this.id }));
+        this.logger.error(this.consolePrefix, "" + (processSays ? '> ' : '') + message, __assign({}, data, { dynaProcessId: this.id }));
     };
     DynaProcess.cleanProcessConsole = function (text) {
         text = text.toString();
